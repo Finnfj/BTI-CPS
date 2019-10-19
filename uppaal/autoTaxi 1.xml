@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+clock g_clk;
+int g_clk_v = 0;
+const int a_no = 1;
+const int b_no = 2;
+const int c_no = 3;
+const int d_no = 4;
+const int e_no = 5;
+const int low_station = 1;
+const int high_station = 5;
+const int station_max = 20;
+const int uid_max = 99999;
+int uid_c = 0;
+int a_wait = 0;
+int b_wait = 0;
+int c_wait = 0;
+int d_wait = 0;
+int e_wait = 0;
+
+typedef struct {
+int uid;
+int start;
+int target;
+int since;
+} person;
+
+person a_pass[station_max];
+person b_pass[station_max];
+person c_pass[station_max];
+person d_pass[station_max];
+person e_pass[station_max];
+
+int randomNumber(int low, int high) {
+    return fint(low + random(high-low));
+}
+
+// create a person at a random station going to a random station
+person randomPerson() {
+    int start = randomNumber(low_station, high_station);
+    int target = randomNumber(low_station, high_station);
+    person p = {uid_c, start, target, g_clk_v};
+    uid_c = uid_c + 1;
+    return p;
+}
+
+// noPerson is simply a dummy for no person
+person noPerson() {
+    person p = {-1, -1, -1, -1};
+    return p;
+}
+
+// check if it's not a person
+bool isNoPerson(person p) {
+    return p.uid == -1 ? true : false;
+}
+
+// add a person to a station
+void addPerson(person p, person&amp; pas[station_max], int&amp; station_pas) {
+    int i;
+    for (i=0; i&lt;station_max; i++) {
+        if (isNoPerson(pas[i])) {
+            pas[i] = p;
+            station_pas++;
+        }
+    }
+}
+
+// take out the person waiting the longest time from the station
+person removeOldestPerson(person&amp; pas[station_max], int&amp; station_pas) {
+    int since = 0;
+    int index;
+    person p = noPerson();
+    int i;
+    for (i=0; i&lt;station_max; i++) {
+        if (!isNoPerson(pas[i])) {
+            if (since == 0 || pas[i].since &lt; since) {
+                index = i;
+                since = pas[i].since;
+                p = pas[i];
+            }
+        }
+    }
+    if (!isNoPerson(p)) {
+        station_pas--;
+        pas[index] = noPerson();
+    }
+    return p;
+}</declaration>
+	<template>
+		<name x="9" y="9">Taxi</name>
+		<declaration>// Place local declarations here.
+const int max_pass = 7;
+clock l_clk;
+person passengers[max_pass];
+int taken = 0;
+
+void seat(person p) {
+    int i;
+    for (i=0; i&lt;max_pass; i++) {
+        if (isNoPerson(passengers[i])) {
+            passengers[i] = p;
+            taken++;
+        }
+    }
+}
+
+void unseat(int station) {
+    int i;
+    for (i=0; i&lt;max_pass; i++) {
+        if (passengers[i].target == station) {
+            passengers[i] = noPerson();
+            taken--;
+        }
+    }
+}</declaration>
+		<location id="id0" x="459" y="-51">
+			<name x="449" y="-85">A</name>
+		</location>
+		<location id="id1" x="246" y="119">
+			<name x="236" y="85">E</name>
+		</location>
+		<location id="id2" x="697" y="110">
+			<name x="687" y="76">B</name>
+		</location>
+		<location id="id3" x="612" y="340">
+			<name x="602" y="306">C</name>
+		</location>
+		<location id="id4" x="348" y="340">
+			<name x="323" y="323">D</name>
+		</location>
+		<location id="id5" x="578" y="25">
+			<name x="568" y="-9">AtoB</name>
+		</location>
+		<location id="id6" x="654" y="221">
+			<name x="671" y="195">BtoC</name>
+		</location>
+		<location id="id7" x="484" y="340">
+			<name x="459" y="306">CtoD</name>
+		</location>
+		<location id="id8" x="297" y="229">
+			<name x="297" y="195">DtoE</name>
+		</location>
+		<location id="id9" x="357" y="25">
+			<name x="347" y="-9">EtoA</name>
+		</location>
+		<location id="id10" x="382" y="255">
+			<name x="372" y="221">Dx</name>
+		</location>
+		<location id="id11" x="552" y="255">
+			<name x="542" y="221">Cx</name>
+		</location>
+		<location id="id12" x="603" y="136">
+			<name x="593" y="102">Bx</name>
+		</location>
+		<location id="id13" x="477" y="42">
+			<name x="484" y="8">Ax</name>
+		</location>
+		<location id="id14" x="357" y="119">
+			<name x="340" y="85">Ex</name>
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id9"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id14"/>
+			<label kind="guard" x="272" y="93">e_wait &gt; 0</label>
+			<label kind="assignment" x="280" y="25">l_clk := 0</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id8"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id10"/>
+			<label kind="guard" x="365" y="297">d_wait &gt; 0</label>
+			<label kind="assignment" x="255" y="246">l_clk := 0</label>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id7"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id11"/>
+			<label kind="guard" x="582" y="263">c_wait &gt; 0</label>
+			<label kind="assignment" x="501" y="340">l_clk := 0</label>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id6"/>
+			<label kind="assignment" x="628" y="178">l_clk := 0</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id12"/>
+			<label kind="guard" x="612" y="102">b_wait &gt; 0</label>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id5"/>
+			<label kind="assignment" x="518" y="34">l_clk := 0</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id13"/>
+			<label kind="guard" x="425" y="-17">a_wait &gt; 0</label>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id0"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id9"/>
+			<label kind="guard" x="212" y="59">e_wait == 0</label>
+			<label kind="assignment" x="280" y="25">l_clk := 0</label>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id1"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id8"/>
+			<label kind="guard" x="272" y="297">d_wait == 0</label>
+			<label kind="assignment" x="255" y="246">l_clk := 0</label>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id4"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id7"/>
+			<label kind="guard" x="502" y="306">c_wait == 0</label>
+			<label kind="assignment" x="502" y="340">l_clk := 0</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id3"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id6"/>
+			<label kind="guard" x="688" y="136">b_wait == 0</label>
+			<label kind="assignment" x="629" y="178">l_clk := 0</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id2"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id5"/>
+			<label kind="guard" x="477" y="-47">a_wait == 0</label>
+			<label kind="assignment" x="518" y="34">l_clk := 0</label>
+		</transition>
+	</template>
+	<template>
+		<name>clockval</name>
+		<location id="id15" x="0" y="0">
+		</location>
+		<location id="id16" x="0" y="-102">
+		</location>
+		<init ref="id15"/>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id16"/>
+			<label kind="guard" x="-169" y="-68">g_clk &gt; g_clk_v</label>
+			<label kind="assignment" x="-161" y="-42">g_clk_v := g_clk_v + 1</label>
+			<nail x="-187" y="-68"/>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id15"/>
+			<label kind="guard" x="25" y="-110">g_clk &gt; g_clk_v</label>
+			<label kind="assignment" x="25" y="-76">g_clk_v := g_clk_v + 1</label>
+			<nail x="51" y="-51"/>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+Process = Taxi();
+globalclock = clockval();
+system Process, globalclock;</system>
+	<queries>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>
