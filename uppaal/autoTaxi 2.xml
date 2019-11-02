@@ -16,13 +16,13 @@ const int high_station = N_station - 1;
 typedef int[0,999] clientID_t;
 typedef int[low_station,high_station] stationID_t;
 typedef int[0,9] taxiID_t;
-urgent broadcast chan req[clientID_t];
-broadcast chan ack[clientID_t];
-broadcast chan tAck[taxiID_t];
-broadcast chan start[stationID_t];
-broadcast chan target[stationID_t];
-broadcast chan exchangingTaxi[taxiID_t];
-broadcast chan exchangingAt[stationID_t];
+urgent chan req[clientID_t];
+chan ack[clientID_t];
+chan tAck[taxiID_t];
+chan start[stationID_t];
+chan target[stationID_t];
+chan exchangingTaxi[taxiID_t];
+chan exchangingAt[stationID_t];
 broadcast chan driveOn[taxiID_t];
 broadcast chan dropTaxi[taxiID_t];
 broadcast chan dropAt[stationID_t];
@@ -316,7 +316,7 @@ ta = target_tmp</label>
 		<transition>
 			<source ref="id25"/>
 			<target ref="id31"/>
-			<label kind="guard" x="-110" y="-187">l_clk &gt; 200</label>
+			<label kind="guard" x="-110" y="-187">l_clk &gt; 2000</label>
 		</transition>
 		<transition>
 			<source ref="id27"/>
@@ -387,7 +387,7 @@ seats[riding_Taxi]--</label>
 		<name>ServerPassThread</name>
 		<declaration>int c;
 int start_tmp;
-int target_tmp;</declaration>
+int target_tmp; </declaration>
 		<location id="id34" x="-348" y="-306">
 		</location>
 		<location id="id35" x="-212" y="-306">
@@ -556,6 +556,7 @@ Pass22 = Passenger(22,-1,-1);
 Pass23 = Passenger(23,-1,-1);
 Pass24 = Passenger(24,-1,-1);
 Pass25 = Passenger(25,-1,-1);
+/*
 Pass26 = Passenger(26,-1,-1);
 Pass27 = Passenger(27,-1,-1);
 Pass28 = Passenger(28,-1,-1);
@@ -580,8 +581,9 @@ Pass46 = Passenger(46,-1,-1);
 Pass47 = Passenger(47,-1,-1);
 Pass48 = Passenger(48,-1,-1);
 Pass49 = Passenger(49,-1,-1);
+*/
 
-system Taxi1, Serv1, Serv2, Pass0,Pass1,Pass2,Pass3,Pass4,Pass5,Pass6,Pass7,Pass8,Pass9,Pass10,Pass11,Pass12,Pass13,Pass14,Pass15,Pass16,Pass17,Pass18,Pass19,Pass20,Pass21,Pass22,Pass23,Pass24,Pass25,Pass26,Pass27,Pass28,Pass29,Pass30,Pass31,Pass32,Pass33,Pass34,Pass35,Pass36,Pass37,Pass38,Pass39,Pass40,Pass41,Pass42,Pass43,Pass44,Pass45,Pass46,Pass47,Pass48,Pass49;
+system Taxi1, Taxi2, Serv1, Serv2, Pass0,Pass1,Pass2,Pass3,Pass4,Pass5,Pass6,Pass7,Pass8,Pass9,Pass10,Pass11,Pass12,Pass13,Pass14,Pass15,Pass16,Pass17,Pass18,Pass19,Pass20,Pass21,Pass22,Pass23,Pass24,Pass25;/*Pass26,Pass27,Pass28,Pass29,Pass30,Pass31,Pass32,Pass33,Pass34,Pass35,Pass36,Pass37,Pass38,Pass39,Pass40,Pass41,Pass42,Pass43,Pass44,Pass45,Pass46,Pass47,Pass48,Pass49*/
 
 /*
 // Place template instantiations here. 
