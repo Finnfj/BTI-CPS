@@ -283,7 +283,7 @@ clock l_clk;</declaration>
 			<name x="-511" y="-102">Seated</name>
 		</location>
 		<location id="id31" x="17" y="-170">
-			<name x="7" y="-204">WaitTimeout</name>
+			<name x="-76" y="-229">WaitTimeout</name>
 		</location>
 		<location id="id32" x="-1181" y="-170">
 		</location>
@@ -569,7 +569,7 @@ Pass34 = Passenger(34,-1,-1);
 Pass35 = Passenger(35,-1,-1);
 Pass36 = Passenger(36,-1,-1);
 Pass37 = Passenger(37,-1,-1);
-Pass38 = Passenger(38,-1,-1);
+Pass38 = Passenger(38,-1,-1); 
 Pass39 = Passenger(39,-1,-1);
 Pass40 = Passenger(40,-1,-1);
 Pass41 = Passenger(41,-1,-1);
@@ -583,7 +583,7 @@ Pass48 = Passenger(48,-1,-1);
 Pass49 = Passenger(49,-1,-1);
 */
 
-system Taxi1, Taxi2, Serv1, Serv2, Pass0,Pass1,Pass2,Pass3,Pass4,Pass5,Pass6,Pass7,Pass8,Pass9,Pass10,Pass11,Pass12,Pass13,Pass14,Pass15,Pass16,Pass17,Pass18,Pass19,Pass20,Pass21,Pass22,Pass23,Pass24,Pass25;/*Pass26,Pass27,Pass28,Pass29,Pass30,Pass31,Pass32,Pass33,Pass34,Pass35,Pass36,Pass37,Pass38,Pass39,Pass40,Pass41,Pass42,Pass43,Pass44,Pass45,Pass46,Pass47,Pass48,Pass49*/
+system Taxi1, Serv1, Serv2, Pass0,Pass1,Pass2,Pass3,Pass4,Pass5,Pass6,Pass7,Pass8,Pass9,Pass10;/*,Pass11,Pass12,Pass13,Pass14,Pass15,Pass16,Pass17,Pass18,Pass19,Pass20,Pass21,Pass22,Pass23,Pass24,Pass25,Pass26,Pass27,Pass28,Pass29,Pass30,Pass31,Pass32,Pass33,Pass34,Pass35,Pass36,Pass37,Pass38,Pass39,Pass40,Pass41,Pass42,Pass43,Pass44,Pass45,Pass46,Pass47,Pass48,Pass49*/
 
 /*
 // Place template instantiations here. 
@@ -643,7 +643,7 @@ system Taxi1, Taxi2, Taxi3, Pass1, Pass2, Pass3, Pass4, Pass5, Pass6, Pass7, Pas
 			<comment></comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt; Taxi1.D</formula>
+			<formula>E&lt;&gt; Pass1.WaitTimeout</formula>
 			<comment></comment>
 		</query>
 		<query>
