@@ -62,7 +62,7 @@ int taken = 0;
 		</location>
 		<location id="id5" x="110" y="-85">
 			<name x="100" y="-119">EtoA</name>
-			<label kind="invariant" x="93" y="-136">l_clk &lt; 170</label>
+			<label kind="invariant" x="93" y="-136">l_clk &lt; 131</label>
 		</location>
 		<location id="id6" x="459" y="-255">
 			<name x="449" y="-289">Aex</name>
@@ -70,7 +70,7 @@ int taken = 0;
 		</location>
 		<location id="id7" x="595" y="-187">
 			<name x="585" y="-221">AtoB</name>
-			<label kind="invariant" x="663" y="-195">l_clk &lt; 200</label>
+			<label kind="invariant" x="663" y="-195">l_clk &lt; 151</label>
 		</location>
 		<location id="id8" x="-8" y="-25">
 			<name x="-18" y="-59">Eex</name>
@@ -78,7 +78,7 @@ int taken = 0;
 		</location>
 		<location id="id9" x="144" y="280">
 			<name x="153" y="255">DtoE</name>
-			<label kind="invariant" x="127" y="212">l_clk &lt; 120</label>
+			<label kind="invariant" x="127" y="212">l_clk &lt; 81</label>
 		</location>
 		<location id="id10" x="195" y="374">
 			<name x="195" y="340">Dex</name>
@@ -90,7 +90,7 @@ int taken = 0;
 		</location>
 		<location id="id12" x="578" y="374">
 			<name x="561" y="340">CtoD</name>
-			<label kind="invariant" x="476" y="331">l_clk &lt; 250</label>
+			<label kind="invariant" x="476" y="331">l_clk &lt; 201</label>
 		</location>
 		<location id="id13" x="935" y="0">
 			<name x="925" y="-34">Bex</name>
@@ -98,7 +98,7 @@ int taken = 0;
 		</location>
 		<location id="id14" x="875" y="110">
 			<name x="841" y="76">BtoC</name>
-			<label kind="invariant" x="865" y="127">l_clk &lt; 150</label>
+			<label kind="invariant" x="865" y="127">l_clk &lt; 101</label>
 		</location>
 		<location id="id15" x="238" y="-153">
 			<name x="228" y="-187">Areq</name>
@@ -242,13 +242,14 @@ int taken = 0;
 	</template>
 	<template>
 		<name>Passenger</name>
-		<parameter>const int id, int sta, int tar</parameter>
+		<parameter>const int id</parameter>
 		<declaration>int st;
 int ta;
 int riding_Taxi;
 clock l_clk;</declaration>
 		<location id="id21" x="-926" y="-170">
-			<label kind="invariant" x="-936" y="-153">l_clk &lt; 200</label>
+			<label kind="invariant" x="-936" y="-153">l_clk &lt; 5</label>
+			<committed/>
 		</location>
 		<location id="id22" x="-739" y="-170">
 			<name x="-765" y="-204">Request</name>
@@ -265,54 +266,59 @@ clock l_clk;</declaration>
 		<location id="id25" x="-153" y="-170">
 			<name x="-163" y="-204">Wait</name>
 		</location>
-		<location id="id26" x="-153" y="-68">
-			<name x="-119" y="-51">Pickup</name>
+		<location id="id26" x="-153" y="17">
+			<name x="-119" y="34">Pickup</name>
 			<committed/>
 		</location>
-		<location id="id27" x="-331" y="-68">
-			<name x="-357" y="-42">TakeSeat</name>
+		<location id="id27" x="-314" y="17">
+			<name x="-340" y="43">TakeSeat</name>
 			<committed/>
 		</location>
-		<location id="id28" x="-688" y="-68">
-			<name x="-714" y="-102">Dropoff</name>
+		<location id="id28" x="-688" y="17">
+			<name x="-714" y="-17">Dropoff</name>
 		</location>
-		<location id="id29" x="-833" y="-68">
-			<name x="-858" y="-102">Arrival</name>
+		<location id="id29" x="-833" y="17">
+			<name x="-858" y="-17">Arrival</name>
 		</location>
-		<location id="id30" x="-501" y="-68">
-			<name x="-511" y="-102">Seated</name>
+		<location id="id30" x="-501" y="17">
+			<name x="-511" y="-17">Seated</name>
 		</location>
 		<location id="id31" x="17" y="-170">
-			<name x="-76" y="-229">WaitTimeout</name>
+			<name x="-42" y="-204">WaitTimeout</name>
 		</location>
 		<location id="id32" x="-1181" y="-170">
 			<label kind="invariant" x="-1283" y="-204">l_clk &lt; 1000</label>
 		</location>
-		<location id="id33" x="-1079" y="-68">
-			<committed/>
+		<location id="id33" x="-501" y="221">
+			<name x="-476" y="204">SeatedTimeout</name>
+		</location>
+		<location id="id34" x="-255" y="-76">
+			<name x="-306" y="-119">SeatsFull</name>
+			<urgent/>
 		</location>
 		<init ref="id32"/>
 		<transition>
-			<source ref="id33"/>
-			<target ref="id21"/>
-			<label kind="guard" x="-1054" y="-85">sta &gt;= 0 &amp;&amp; tar &gt;= 0</label>
-			<label kind="assignment" x="-1003" y="-119">st = sta,
-ta = tar</label>
+			<source ref="id34"/>
+			<target ref="id25"/>
 		</transition>
 		<transition>
-			<source ref="id33"/>
-			<target ref="id32"/>
-			<label kind="select" x="-1283" y="-144">start_tmp : int[0,4],
-target_tmp : int[0,4],
-ran : int[0,1000]</label>
-			<label kind="guard" x="-1283" y="-93">sta == -1 &amp;&amp; tar == -1</label>
-			<label kind="assignment" x="-1283" y="-59">st = start_tmp,
-ta = target_tmp</label>
+			<source ref="id27"/>
+			<target ref="id34"/>
+			<label kind="guard" x="-442" y="-68">seats[riding_Taxi] &gt;= 7</label>
+		</transition>
+		<transition>
+			<source ref="id30"/>
+			<target ref="id33"/>
+			<label kind="guard" x="-493" y="119">l_clk &gt; 900</label>
 		</transition>
 		<transition>
 			<source ref="id32"/>
 			<target ref="id21"/>
-			<label kind="assignment" x="-1096" y="-170">l_clk = 0</label>
+			<label kind="select" x="-1113" y="-221">start_tmp: int[0,4],
+target_tmp: int[0,4]</label>
+			<label kind="assignment" x="-1113" y="-161">st = start_tmp,
+ta = target_tmp,
+l_clk = 0</label>
 		</transition>
 		<transition>
 			<source ref="id25"/>
@@ -322,45 +328,40 @@ ta = target_tmp</label>
 		<transition>
 			<source ref="id27"/>
 			<target ref="id30"/>
-			<label kind="guard" x="-484" y="-93">seats[riding_Taxi] &lt; 7</label>
-			<label kind="assignment" x="-484" y="-68">seats[riding_Taxi]++,
-wait[st]--</label>
+			<label kind="guard" x="-484" y="0">seats[riding_Taxi] &lt; 7</label>
+			<label kind="assignment" x="-484" y="17">seats[riding_Taxi]++,
+wait[st]--,
+l_clk = 0</label>
 		</transition>
 		<transition>
 			<source ref="id28"/>
 			<target ref="id30"/>
-			<label kind="synchronisation" x="-654" y="-8">driveOn[riding_Taxi]?</label>
-			<nail x="-595" y="-8"/>
+			<label kind="synchronisation" x="-654" y="77">driveOn[riding_Taxi]?</label>
+			<nail x="-595" y="77"/>
 		</transition>
 		<transition>
 			<source ref="id30"/>
 			<target ref="id28"/>
-			<label kind="synchronisation" x="-671" y="-85">dropTaxi[riding_Taxi]?</label>
-		</transition>
-		<transition>
-			<source ref="id27"/>
-			<target ref="id25"/>
-			<label kind="guard" x="-408" y="-136">seats[riding_Taxi] &gt;= 7</label>
-			<nail x="-246" y="-119"/>
+			<label kind="synchronisation" x="-671" y="0">dropTaxi[riding_Taxi]?</label>
 		</transition>
 		<transition>
 			<source ref="id28"/>
 			<target ref="id29"/>
-			<label kind="synchronisation" x="-808" y="-93">dropAt[ta]?</label>
-			<label kind="assignment" x="-808" y="-59">want[ta]--,
+			<label kind="synchronisation" x="-808" y="-8">dropAt[ta]?</label>
+			<label kind="assignment" x="-808" y="26">want[ta]--,
 seats[riding_Taxi]--</label>
 		</transition>
 		<transition>
 			<source ref="id26"/>
 			<target ref="id27"/>
-			<label kind="select" x="-246" y="-102">i : taxiID_t</label>
-			<label kind="synchronisation" x="-246" y="-85">pickTaxi[i]?</label>
-			<label kind="assignment" x="-272" y="-59">riding_Taxi = i</label>
+			<label kind="select" x="-246" y="-17">i : taxiID_t</label>
+			<label kind="synchronisation" x="-246" y="0">pickTaxi[i]?</label>
+			<label kind="assignment" x="-272" y="26">riding_Taxi = i</label>
 		</transition>
 		<transition>
 			<source ref="id25"/>
 			<target ref="id26"/>
-			<label kind="synchronisation" x="-136" y="-119">pickup[st]?</label>
+			<label kind="synchronisation" x="-136" y="-34">pickup[st]?</label>
 		</transition>
 		<transition>
 			<source ref="id24"/>
@@ -385,59 +386,256 @@ seats[riding_Taxi]--</label>
 		</transition>
 	</template>
 	<template>
+		<name>Passenger_s</name>
+		<parameter>const int id, int st, int ta, int waiting</parameter>
+		<declaration>int riding_Taxi;
+clock l_clk;</declaration>
+		<location id="id35" x="306" y="-195">
+			<name x="255" y="-238">SeatsFull</name>
+			<urgent/>
+		</location>
+		<location id="id36" x="408" y="-289">
+			<name x="398" y="-323">Wait</name>
+		</location>
+		<location id="id37" x="247" y="-102">
+			<name x="221" y="-76">TakeSeat</name>
+			<committed/>
+		</location>
+		<location id="id38" x="60" y="-102">
+			<name x="50" y="-136">Seated</name>
+		</location>
+		<location id="id39" x="60" y="102">
+			<name x="85" y="85">SeatedTimeout</name>
+			<committed/>
+		</location>
+		<location id="id40" x="-365" y="-289">
+			<label kind="invariant" x="-375" y="-272">l_clk &lt; 1</label>
+			<committed/>
+		</location>
+		<location id="id41" x="-178" y="-289">
+			<name x="-204" y="-323">Request</name>
+			<committed/>
+		</location>
+		<location id="id42" x="26" y="-289">
+			<name x="-25" y="-331">Connected</name>
+			<committed/>
+		</location>
+		<location id="id43" x="230" y="-289">
+			<name x="187" y="-323">Transfer</name>
+			<committed/>
+		</location>
+		<location id="id44" x="408" y="-102">
+			<name x="442" y="-85">Pickup</name>
+			<committed/>
+		</location>
+		<location id="id45" x="-127" y="-102">
+			<name x="-153" y="-136">Dropoff</name>
+		</location>
+		<location id="id46" x="-272" y="-102">
+			<name x="-297" y="-136">Arrival</name>
+		</location>
+		<location id="id47" x="578" y="-289">
+			<name x="519" y="-323">WaitTimeout</name>
+			<committed/>
+		</location>
+		<location id="id48" x="-620" y="-289">
+			<label kind="invariant" x="-671" y="-331">l_clk &lt; (waiting + 1)</label>
+		</location>
+		<init ref="id48"/>
+		<transition>
+			<source ref="id47"/>
+			<target ref="id36"/>
+			<label kind="assignment" x="450" y="-255">l_clk = 0</label>
+			<nail x="493" y="-263"/>
+		</transition>
+		<transition>
+			<source ref="id39"/>
+			<target ref="id38"/>
+			<label kind="assignment" x="-25" y="17">l_clk = 0</label>
+			<nail x="34" y="-8"/>
+		</transition>
+		<transition>
+			<source ref="id35"/>
+			<target ref="id36"/>
+		</transition>
+		<transition>
+			<source ref="id37"/>
+			<target ref="id35"/>
+			<label kind="guard" x="119" y="-187">seats[riding_Taxi] &gt;= 7</label>
+		</transition>
+		<transition>
+			<source ref="id38"/>
+			<target ref="id39"/>
+			<label kind="guard" x="93" y="0">l_clk &gt; 900</label>
+			<nail x="85" y="-8"/>
+		</transition>
+		<transition>
+			<source ref="id48"/>
+			<target ref="id40"/>
+			<label kind="guard" x="-561" y="-314">l_clk &gt;= waiting</label>
+			<label kind="assignment" x="-535" y="-280">l_clk = 0</label>
+		</transition>
+		<transition>
+			<source ref="id36"/>
+			<target ref="id47"/>
+			<label kind="guard" x="442" y="-323">l_clk &gt; 900</label>
+			<nail x="493" y="-306"/>
+		</transition>
+		<transition>
+			<source ref="id37"/>
+			<target ref="id38"/>
+			<label kind="guard" x="77" y="-119">seats[riding_Taxi] &lt; 7</label>
+			<label kind="assignment" x="77" y="-102">seats[riding_Taxi]++,
+wait[st]--,
+l_clk = 0</label>
+		</transition>
+		<transition>
+			<source ref="id45"/>
+			<target ref="id38"/>
+			<label kind="synchronisation" x="-93" y="-42">driveOn[riding_Taxi]?</label>
+			<nail x="-34" y="-42"/>
+		</transition>
+		<transition>
+			<source ref="id38"/>
+			<target ref="id45"/>
+			<label kind="synchronisation" x="-110" y="-119">dropTaxi[riding_Taxi]?</label>
+		</transition>
+		<transition>
+			<source ref="id45"/>
+			<target ref="id46"/>
+			<label kind="synchronisation" x="-247" y="-127">dropAt[ta]?</label>
+			<label kind="assignment" x="-247" y="-93">want[ta]--,
+seats[riding_Taxi]--</label>
+		</transition>
+		<transition>
+			<source ref="id44"/>
+			<target ref="id37"/>
+			<label kind="select" x="315" y="-136">i : taxiID_t</label>
+			<label kind="synchronisation" x="315" y="-119">pickTaxi[i]?</label>
+			<label kind="assignment" x="289" y="-93">riding_Taxi = i</label>
+		</transition>
+		<transition>
+			<source ref="id36"/>
+			<target ref="id44"/>
+			<label kind="synchronisation" x="425" y="-153">pickup[st]?</label>
+		</transition>
+		<transition>
+			<source ref="id43"/>
+			<target ref="id36"/>
+			<label kind="synchronisation" x="264" y="-323">target[ta]!</label>
+			<label kind="assignment" x="264" y="-306">l_clk = 0</label>
+		</transition>
+		<transition>
+			<source ref="id42"/>
+			<target ref="id43"/>
+			<label kind="synchronisation" x="68" y="-323">start[st]!</label>
+		</transition>
+		<transition>
+			<source ref="id40"/>
+			<target ref="id41"/>
+			<label kind="synchronisation" x="-340" y="-323">req[id]!</label>
+		</transition>
+		<transition>
+			<source ref="id41"/>
+			<target ref="id42"/>
+			<label kind="synchronisation" x="-136" y="-323">ack[id]?</label>
+		</transition>
+	</template>
+	<template>
+		<name>Witness</name>
+		<location id="id49" x="-136" y="-76">
+		</location>
+		<location id="id50" x="85" y="-76">
+			<name x="75" y="-110">AllSeated</name>
+		</location>
+		<location id="id51" x="306" y="0">
+			<name x="296" y="-34">AllArrived</name>
+		</location>
+		<location id="id52" x="-374" y="-76">
+		</location>
+		<location id="id53" x="306" y="-161">
+			<name x="296" y="-195">TaxiOverload</name>
+		</location>
+		<init ref="id52"/>
+		<transition>
+			<source ref="id50"/>
+			<target ref="id53"/>
+			<label kind="guard" x="170" y="-170">seats[1] &gt; 7</label>
+			<label kind="synchronisation" x="187" y="-119">driveOn[1]?</label>
+		</transition>
+		<transition>
+			<source ref="id52"/>
+			<target ref="id49"/>
+			<label kind="guard" x="-637" y="-51">want[0] &gt; 0 || want[1] &gt; 0 || want[2] &gt; 0 || want[3] &gt; 0 || want[4] &gt; 0</label>
+			<label kind="synchronisation" x="-356" y="-93">driveOn[1]?</label>
+		</transition>
+		<transition>
+			<source ref="id50"/>
+			<target ref="id51"/>
+			<label kind="guard" x="102" y="17">want[0] == 0 &amp;&amp; want[1] == 0 &amp;&amp; want[2] == 0 &amp;&amp; want[3] == 0 &amp;&amp; want[4] == 0</label>
+			<label kind="synchronisation" x="119" y="-42">driveOn[1]?</label>
+		</transition>
+		<transition>
+			<source ref="id49"/>
+			<target ref="id50"/>
+			<label kind="guard" x="-535" y="-136">wait[0] == 0 &amp;&amp; wait[1] == 0 &amp;&amp; wait[2] == 0 &amp;&amp; wait[3] == 0 &amp;&amp; wait[4] == 0</label>
+			<label kind="synchronisation" x="-118" y="-93">driveOn[1]?</label>
+		</transition>
+	</template>
+	<template>
 		<name>ServerPassThread</name>
 		<declaration>int c;
 int start_tmp;
 int target_tmp; </declaration>
-		<location id="id34" x="-348" y="-306">
+		<location id="id54" x="-348" y="-306">
 		</location>
-		<location id="id35" x="-212" y="-306">
+		<location id="id55" x="-212" y="-306">
 			<name x="-238" y="-340">Request</name>
 			<committed/>
 		</location>
-		<location id="id36" x="-76" y="-306">
+		<location id="id56" x="-76" y="-306">
 			<name x="-127" y="-340">Connected</name>
 			<committed/>
 		</location>
-		<location id="id37" x="60" y="-306">
+		<location id="id57" x="60" y="-306">
 			<name x="25" y="-340">Transfer</name>
 			<committed/>
 		</location>
-		<location id="id38" x="195" y="-306">
+		<location id="id58" x="195" y="-306">
 			<name x="185" y="-340">Finish</name>
 			<committed/>
 		</location>
-		<init ref="id34"/>
+		<init ref="id54"/>
 		<transition>
-			<source ref="id38"/>
-			<target ref="id34"/>
+			<source ref="id58"/>
+			<target ref="id54"/>
 			<label kind="assignment" x="-330" y="-170">wait[start_tmp]++,
 want[target_tmp]++</label>
 			<nail x="195" y="-170"/>
 			<nail x="-348" y="-170"/>
 		</transition>
 		<transition>
-			<source ref="id37"/>
-			<target ref="id38"/>
+			<source ref="id57"/>
+			<target ref="id58"/>
 			<label kind="select" x="76" y="-297">ta: stationID_t</label>
 			<label kind="synchronisation" x="76" y="-280">target[ta]?</label>
 			<label kind="assignment" x="76" y="-263">target_tmp = ta</label>
 		</transition>
 		<transition>
-			<source ref="id36"/>
-			<target ref="id37"/>
+			<source ref="id56"/>
+			<target ref="id57"/>
 			<label kind="select" x="-59" y="-297">st : stationID_t</label>
 			<label kind="synchronisation" x="-59" y="-280">start[st]?</label>
 			<label kind="assignment" x="-59" y="-263">start_tmp = st</label>
 		</transition>
 		<transition>
-			<source ref="id35"/>
-			<target ref="id36"/>
+			<source ref="id55"/>
+			<target ref="id56"/>
 			<label kind="synchronisation" x="-178" y="-289">ack[c]!</label>
 		</transition>
 		<transition>
-			<source ref="id34"/>
-			<target ref="id35"/>
+			<source ref="id54"/>
+			<target ref="id55"/>
 			<label kind="select" x="-331" y="-297">i : clientID_t</label>
 			<label kind="synchronisation" x="-331" y="-280">req[i]?</label>
 			<label kind="assignment" x="-331" y="-263">c = i</label>
@@ -447,213 +645,156 @@ want[target_tmp]++</label>
 		<name>ServerTaxiThread</name>
 		<declaration>int station;
 int n;</declaration>
-		<location id="id39" x="-170" y="-144">
+		<location id="id59" x="-170" y="-144">
 			<name x="-180" y="-178">Connect</name>
 			<committed/>
 		</location>
-		<location id="id40" x="-297" y="-144">
+		<location id="id60" x="-297" y="-144">
 			<name x="-307" y="-178">Transfer1</name>
 			<committed/>
 		</location>
-		<location id="id41" x="-93" y="-144">
+		<location id="id61" x="-93" y="-144">
 			<name x="-110" y="-178">Request</name>
 			<committed/>
 		</location>
-		<location id="id42" x="51" y="-144">
+		<location id="id62" x="51" y="-144">
 		</location>
-		<location id="id43" x="-705" y="-51">
+		<location id="id63" x="-705" y="-51">
 			<name x="-765" y="-59">Finish</name>
 			<committed/>
 		</location>
-		<location id="id44" x="-705" y="-144">
+		<location id="id64" x="-705" y="-144">
 			<name x="-731" y="-178">Notify2</name>
 			<committed/>
 		</location>
-		<location id="id45" x="-552" y="-144">
+		<location id="id65" x="-552" y="-144">
 			<name x="-562" y="-178">Notify1</name>
 			<committed/>
 		</location>
-		<location id="id46" x="-408" y="-144">
+		<location id="id66" x="-408" y="-144">
 			<name x="-418" y="-178">Transfer2</name>
 			<committed/>
 		</location>
-		<init ref="id42"/>
+		<init ref="id62"/>
 		<transition>
-			<source ref="id43"/>
-			<target ref="id42"/>
+			<source ref="id63"/>
+			<target ref="id62"/>
 			<label kind="synchronisation" x="-687" y="-68">driveOn[n]!</label>
 			<nail x="51" y="-51"/>
 			<nail x="51" y="-127"/>
 		</transition>
 		<transition>
-			<source ref="id39"/>
-			<target ref="id40"/>
+			<source ref="id59"/>
+			<target ref="id60"/>
 			<label kind="select" x="-280" y="-136">i : stationID_t</label>
 			<label kind="synchronisation" x="-280" y="-119">exchangingAt[i]?</label>
 			<label kind="assignment" x="-280" y="-102">station = i</label>
 		</transition>
 		<transition>
-			<source ref="id41"/>
-			<target ref="id39"/>
+			<source ref="id61"/>
+			<target ref="id59"/>
 			<label kind="synchronisation" x="-161" y="-136">tAck[n]!</label>
 		</transition>
 		<transition>
-			<source ref="id44"/>
-			<target ref="id43"/>
+			<source ref="id64"/>
+			<target ref="id63"/>
 			<label kind="synchronisation" x="-697" y="-110">pickTaxi[n]!</label>
 		</transition>
 		<transition>
-			<source ref="id45"/>
-			<target ref="id44"/>
+			<source ref="id65"/>
+			<target ref="id64"/>
 			<label kind="synchronisation" x="-680" y="-170">pickup[station]!</label>
 		</transition>
 		<transition>
-			<source ref="id46"/>
-			<target ref="id45"/>
+			<source ref="id66"/>
+			<target ref="id65"/>
 			<label kind="synchronisation" x="-527" y="-127">dropAt[station]!</label>
 		</transition>
 		<transition>
-			<source ref="id40"/>
-			<target ref="id46"/>
+			<source ref="id60"/>
+			<target ref="id66"/>
 			<label kind="synchronisation" x="-391" y="-127">dropTaxi[n]!</label>
 		</transition>
 		<transition>
-			<source ref="id42"/>
-			<target ref="id41"/>
+			<source ref="id62"/>
+			<target ref="id61"/>
 			<label kind="select" x="-76" y="-136">i: taxiID_t</label>
 			<label kind="synchronisation" x="-93" y="-119">exchangingTaxi[i]?</label>
 			<label kind="assignment" x="-68" y="-102">n = i</label>
 		</transition>
 	</template>
-	<system>
-Serv1= ServerTaxiThread();
+	<system>Serv1= ServerTaxiThread();
 Serv2= ServerPassThread();
 Taxi1 = Taxi(1);
-Taxi2 = Taxi(2);
+Witness1 = Witness();
 
-Pass0 = Passenger(0,-1,-1);
-Pass1 = Passenger(1,-1,-1);
-Pass2 = Passenger(2,-1,-1);
-Pass3 = Passenger(3,-1,-1);
-Pass4 = Passenger(4,-1,-1);
-Pass5 = Passenger(5,-1,-1);
-Pass6 = Passenger(6,-1,-1);
-Pass7 = Passenger(7,-1,-1);
-Pass8 = Passenger(8,-1,-1);
-Pass9 = Passenger(9,-1,-1);
-Pass10 = Passenger(10,-1,-1);
-Pass11 = Passenger(11,-1,-1);
-Pass12 = Passenger(12,-1,-1);
-Pass13 = Passenger(13,-1,-1);
-Pass14 = Passenger(14,-1,-1);
-Pass15 = Passenger(15,-1,-1);
-Pass16 = Passenger(16,-1,-1);
-Pass17 = Passenger(17,-1,-1);
-Pass18 = Passenger(18,-1,-1);
-Pass19 = Passenger(19,-1,-1);
-Pass20 = Passenger(20,-1,-1);
-Pass21 = Passenger(21,-1,-1);
-Pass22 = Passenger(22,-1,-1); 
-Pass23 = Passenger(23,-1,-1);
-Pass24 = Passenger(24,-1,-1);
-Pass25 = Passenger(25,-1,-1);
+Pass0 = Passenger_s(0,0,4,326);
+Pass1 = Passenger_s(1,1,1,103);
+Pass2 = Passenger_s(2,0,0,197);
+Pass3 = Passenger_s(3,0,2,162);
+Pass4 = Passenger_s(4,0,4,249);
+Pass5 = Passenger_s(5,2,2,128);
+Pass6 = Passenger_s(6,0,0,101);
+Pass7 = Passenger_s(7,2,3,303);
+Pass8 = Passenger_s(8,0,0,40);
+Pass9 = Passenger_s(9,2,4,228);
+Pass10 = Passenger_s(10,0,0,215);
+Pass11 = Passenger_s(11,0,4,54);
+system Witness1,Taxi1,Serv1,Serv2,Pass0,Pass1,Pass2,Pass3,Pass4,Pass5,Pass6,Pass7,Pass8,Pass9,Pass10,Pass11;
+
 /*
-Pass26 = Passenger(26,-1,-1);
-Pass27 = Passenger(27,-1,-1);
-Pass28 = Passenger(28,-1,-1);
-Pass29 = Passenger(29,-1,-1);
-Pass30 = Passenger(30,-1,-1);
-Pass31 = Passenger(31,-1,-1);
-Pass32 = Passenger(32,-1,-1);
-Pass33 = Passenger(33,-1,-1);
-Pass34 = Passenger(34,-1,-1);
-Pass35 = Passenger(35,-1,-1);
-Pass36 = Passenger(36,-1,-1);
-Pass37 = Passenger(37,-1,-1);
-Pass38 = Passenger(38,-1,-1); 
-Pass39 = Passenger(39,-1,-1);
-Pass40 = Passenger(40,-1,-1);
-Pass41 = Passenger(41,-1,-1);
-Pass42 = Passenger(42,-1,-1);
-Pass43 = Passenger(43,-1,-1);
-Pass44 = Passenger(44,-1,-1);
-Pass45 = Passenger(45,-1,-1);
-Pass46 = Passenger(46,-1,-1);
-Pass47 = Passenger(47,-1,-1);
-Pass48 = Passenger(48,-1,-1);
-Pass49 = Passenger(49,-1,-1);
+Pass0 = Passenger_s(0,1,4,753);
+Pass1 = Passenger_s(1,4,3,21);
+Pass2 = Passenger_s(2,2,1,869);
+Pass3 = Passenger_s(3,2,4,289);
+Pass4 = Passenger_s(4,0,2,635);
+Pass5 = Passenger_s(5,3,0,564);
+Pass6 = Passenger_s(6,2,4,856);
+Pass7 = Passenger_s(7,4,1,641);
+Pass8 = Passenger_s(8,0,3,125);
+Pass9 = Passenger_s(9,0,4,75);
+system Taxi1,Serv1,Serv2,Pass0,Pass1,Pass2,Pass3,Pass4,Pass5,Pass6,Pass7,Pass8,Pass9;*/
+
+/* Dynamic Passengers
+Pass0 = Passenger(0);
+Pass1 = Passenger(1);
+Pass2 = Passenger(2);
+Pass3 = Passenger(3);
+Pass4 = Passenger(4);
+Pass5 = Passenger(5);
+Pass6 = Passenger(6);
+
+system Taxi1,Serv1,Serv2,Pass0,Pass1,Pass2,Pass3,Pass4,Pass5,Pass6;
 */
-
-system Taxi1, Serv1, Serv2, Pass0,Pass1,Pass2,Pass3,Pass4;/*,Pass11,Pass12,Pass13,Pass14,Pass15,Pass16,Pass17,Pass18,Pass19,Pass20,Pass21,Pass22,Pass23,Pass24,Pass25,Pass26,Pass27,Pass28,Pass29,Pass30,Pass31,Pass32,Pass33,Pass34,Pass35,Pass36,Pass37,Pass38,Pass39,Pass40,Pass41,Pass42,Pass43,Pass44,Pass45,Pass46,Pass47,Pass48,Pass49*/
-
-/*
-// Place template instantiations here. 
-Serv1= ServerTaxiThread();
-Serv2= ServerPassThread();
-Taxi1 = Taxi(1);
-Taxi2 = Taxi(2);
-PassSpawner = PassengerSpawner();
-
-system Taxi1, PassSpawner, Serv1, Serv2;
-*/
-
-/*
-// Place template instantiations here. 
-Serv1= ServerTaxiThread();
-Serv2= ServerPassThread();
-Taxi1 = Taxi(1);
-Taxi2 = Taxi(2);
-Pass1 = Passenger(1,1,3);
-Pass2 = Passenger(2,1,4);
-Pass3 = Passenger(3,1,3);
-Pass4 = Passenger(4,1,3);
-Pass5 = Passenger(5,0,1);
-Pass6 = Passenger(6,0,4);
-
-system Taxi1, Pass1, Pass2, Pass3, Pass4, Pass5, Pass6, Serv1, Serv2;
-*/
-
-
-/*
-// Place template instantiations here. 
-Serv1= ServerTaxiThread();
-Serv2= ServerPassThread();
-Taxi1 = Taxi(1);
-Taxi2 = Taxi(2);
-Taxi3 = Taxi(3);
-Pass1 = Passenger(1,1,3);
-Pass2 = Passenger(2,1,4);
-Pass3 = Passenger(3,1,3);
-Pass4 = Passenger(4,1,3);
-Pass5 = Passenger(5,0,1);
-Pass6 = Passenger(6,0,4);
-Pass7 = Passenger(7,0,3);
-Pass8 = Passenger(8,0,4);
-Pass9 = Passenger(9,0,4);
-Pass10 = Passenger(10,0,1);
-
-system Taxi1, Taxi2, Taxi3, Pass1, Pass2, Pass3, Pass4, Pass5, Pass6, Pass7, Pass8, Pass9, Pass10, Serv1, Serv2;
-*/</system>
+</system>
 	<queries>
 		<query>
-			<formula>E&lt;&gt; Pass4.Arrival</formula>
-			<comment></comment>
+			<formula>E&lt;&gt; Pass0.WaitTimeout or Pass1.WaitTimeout or Pass2.WaitTimeout or Pass3.WaitTimeout or Pass4.WaitTimeout or Pass5.WaitTimeout or Pass6.WaitTimeout or Pass7.WaitTimeout or Pass8.WaitTimeout or Pass9.WaitTimeout or Pass10.WaitTimeout or Pass11.WaitTimeout
+</formula>
+			<comment>Ziel 1</comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt; (Pass1.Arrival and Pass2.Arrival and Pass3.Arrival and Pass4.Arrival)</formula>
-			<comment></comment>
+			<formula>E&lt;&gt; Pass0.SeatedTimeout or Pass1.SeatedTimeout or Pass2.SeatedTimeout or Pass3.SeatedTimeout or Pass4.SeatedTimeout or Pass5.SeatedTimeout or Pass6.SeatedTimeout or Pass7.SeatedTimeout or Pass8.SeatedTimeout or Pass9.SeatedTimeout or Pass10.SeatedTimeout or Pass11.SeatedTimeout
+</formula>
+			<comment>Ziel 2
+Abhängig von Anzahl Taxis, Passagieren und Länge des Timeouts</comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt; Pass1.WaitTimeout</formula>
-			<comment></comment>
+			<formula>A&lt;&gt; Witness1.AllArrived</formula>
+			<comment>Ziel 3</comment>
 		</query>
 		<query>
-			<formula>A[] not (Pass1.Connected and Pass2.Connected)</formula>
-			<comment></comment>
+			<formula>A&lt;&gt; Witness1.AllSeated</formula>
+			<comment>Ziel 4.</comment>
 		</query>
 		<query>
-			<formula>A[] not (Taxi1.Aex and Taxi2.Aex)</formula>
-			<comment></comment>
+			<formula>E&lt;&gt; Witness1.TaxiOverload</formula>
+			<comment>Ziel 6</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; Pass0.SeatsFull or Pass1.SeatsFull or Pass2.SeatsFull or Pass3.SeatsFull or Pass4.SeatsFull or Pass5.SeatsFull or Pass6.SeatsFull or Pass7.SeatsFull or Pass8.SeatsFull or Pass9.SeatsFull or Pass10.SeatsFull or Pass11.SeatsFull
+</formula>
+			<comment>Ziel 5</comment>
 		</query>
 		<query>
 			<formula>A[] not deadlock</formula>
