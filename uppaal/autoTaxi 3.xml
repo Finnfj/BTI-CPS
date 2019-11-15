@@ -728,19 +728,28 @@ Serv2= ServerPassThread();
 Taxi1 = Taxi(1);
 Witness1 = Witness();
 
-Pass0 = Passenger_s(0,0,4,326);
-Pass1 = Passenger_s(1,1,1,103);
-Pass2 = Passenger_s(2,0,0,197);
-Pass3 = Passenger_s(3,0,2,162);
-Pass4 = Passenger_s(4,0,4,249);
-Pass5 = Passenger_s(5,2,2,128);
-Pass6 = Passenger_s(6,0,0,101);
-Pass7 = Passenger_s(7,2,3,303);
-Pass8 = Passenger_s(8,0,0,40);
-Pass9 = Passenger_s(9,2,4,228);
-Pass10 = Passenger_s(10,0,0,215);
-Pass11 = Passenger_s(11,0,4,54);
-system Witness1,Taxi1,Serv1,Serv2,Pass0,Pass1,Pass2,Pass3,Pass4,Pass5,Pass6,Pass7,Pass8,Pass9,Pass10,Pass11;
+Pass0 = Passenger_s(0,4,4,156);
+Pass1 = Passenger_s(1,4,0,31);
+Pass2 = Passenger_s(2,3,0,388);
+Pass3 = Passenger_s(3,3,1,294);
+Pass4 = Passenger_s(4,1,2,219);
+Pass5 = Passenger_s(5,1,3,24);
+Pass6 = Passenger_s(6,1,1,262);
+Pass7 = Passenger_s(7,3,1,298);
+Pass8 = Passenger_s(8,4,0,51);
+Pass9 = Passenger_s(9,3,4,364);
+Pass10 = Passenger_s(10,1,1,320);
+Pass11 = Passenger_s(11,0,4,233);
+Pass12 = Passenger_s(12,4,0,156);
+Pass13 = Passenger_s(13,3,2,163);
+Pass14 = Passenger_s(14,2,2,120);
+Pass15 = Passenger_s(15,4,0,362);
+Pass16 = Passenger_s(16,0,2,18);
+Pass17 = Passenger_s(17,2,2,187);
+Pass18 = Passenger_s(18,0,0,156);
+Pass19 = Passenger_s(19,2,1,301);
+system Witness1,Taxi1,Serv1,Serv2,Pass0,Pass1,Pass2,Pass3,Pass4,Pass5,Pass6,Pass7,Pass8,Pass9,Pass10,Pass11,Pass12,Pass13,Pass14,Pass15,Pass16,Pass17,Pass18,Pass19;
+
 
 /*
 Pass0 = Passenger_s(0,1,4,753);
@@ -795,6 +804,19 @@ Abhängig von Anzahl Taxis, Passagieren und Länge des Timeouts</comment>
 			<formula>E&lt;&gt; Pass0.SeatsFull or Pass1.SeatsFull or Pass2.SeatsFull or Pass3.SeatsFull or Pass4.SeatsFull or Pass5.SeatsFull or Pass6.SeatsFull or Pass7.SeatsFull or Pass8.SeatsFull or Pass9.SeatsFull or Pass10.SeatsFull or Pass11.SeatsFull
 </formula>
 			<comment>Ziel 5</comment>
+		</query>
+		<query>
+			<formula>A[] (seats[1] &lt; 7) imply not (Pass0.SeatsFull and Pass1.SeatsFull and Pass2.SeatsFull and Pass3.SeatsFull and Pass4.SeatsFull and Pass5.SeatsFull and Pass6.SeatsFull and Pass7.SeatsFull and Pass8.SeatsFull and Pass9.SeatsFull and Pass10.SeatsFull and Pass11.SeatsFull and Pass12.SeatsFull and Pass13.SeatsFull and Pass14.SeatsFull and Pass15.SeatsFull and Pass16.SeatsFull and Pass16.SeatsFull and Pass17.SeatsFull and Pass18.SeatsFull and Pass19.SeatsFull)</formula>
+			<comment>Ziel 5
+A[] Taxi nicht voll impliziert Passagier darf nicht in Seatsfull gelangen</comment>
+		</query>
+		<query>
+			<formula>A[] seats[1] &lt;= 7</formula>
+			<comment>Ziel 6</comment>
+		</query>
+		<query>
+			<formula>A[] ((seats[1] &gt; 0) --&gt; A[](want[0] == 0 &amp;&amp; want[1] == 0 &amp;&amp; want[2] == 0 &amp;&amp; want[3] == 0 &amp;&amp; want[4] == 0))</formula>
+			<comment></comment>
 		</query>
 		<query>
 			<formula>A[] not deadlock</formula>

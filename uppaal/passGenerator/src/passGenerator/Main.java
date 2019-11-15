@@ -5,7 +5,7 @@ import java.util.Random;
 public class Main {
 	public static void main(String[] args) {
 		Random zufall = new Random();
-		int noPass = 12;
+		int noPass = 20;
 		if (args.equals("")) {
 			noPass = Integer.parseInt(args[0]);
 		}
