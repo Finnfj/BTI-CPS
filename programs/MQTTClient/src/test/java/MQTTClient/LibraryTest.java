@@ -4,6 +4,9 @@
 package MQTTClient;
 
 import org.junit.Test;
+
+import cpsLib.Library;
+
 import static org.junit.Assert.*;
 
 public class LibraryTest {

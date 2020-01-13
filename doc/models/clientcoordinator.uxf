@@ -4,7 +4,7 @@
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>320</x>
+      <x>470</x>
       <y>170</y>
       <w>660</w>
       <h>450</h>
@@ -16,7 +16,7 @@ ClientCoordinator</panel_attributes>
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>410</x>
+      <x>560</x>
       <y>260</y>
       <w>200</w>
       <h>60</h>
@@ -29,7 +29,7 @@ DiscoverService</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>190</x>
+      <x>340</x>
       <y>280</y>
       <w>240</w>
       <h>40</h>
@@ -41,7 +41,7 @@ m1=Connect</panel_attributes>
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>670</x>
+      <x>820</x>
       <y>350</y>
       <w>200</w>
       <h>60</h>
@@ -54,7 +54,7 @@ Registry</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>500</x>
+      <x>650</x>
       <y>370</y>
       <w>110</w>
       <h>80</h>
@@ -66,7 +66,7 @@ m1=OfferHandling</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>490</x>
+      <x>640</x>
       <y>310</y>
       <w>50</w>
       <h>80</h>
@@ -77,7 +77,7 @@ m1=OfferHandling</panel_attributes>
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>410</x>
+      <x>560</x>
       <y>440</y>
       <w>200</w>
       <h>60</h>
@@ -90,7 +90,7 @@ ClientHandler</panel_attributes>
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>420</x>
+      <x>570</x>
       <y>450</y>
       <w>200</w>
       <h>60</h>
@@ -101,7 +101,7 @@ ClientHandler</panel_attributes>
   <element>
     <id>UMLGeneric</id>
     <coordinates>
-      <x>400</x>
+      <x>550</x>
       <y>430</y>
       <w>200</w>
       <h>60</h>
@@ -112,19 +112,19 @@ ClientHandler</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>610</x>
+      <x>750</x>
       <y>460</y>
-      <w>180</w>
+      <w>190</w>
       <h>40</h>
     </coordinates>
     <panel_attributes>lt=()-
 m1=ClientData</panel_attributes>
-    <additional_attributes>160.0;10.0;10.0;10.0</additional_attributes>
+    <additional_attributes>170.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>190</x>
+      <x>340</x>
       <y>460</y>
       <w>230</w>
       <h>40</h>
@@ -136,7 +136,7 @@ m1=Service</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>750</x>
+      <x>900</x>
       <y>400</y>
       <w>50</w>
       <h>80</h>
@@ -147,7 +147,7 @@ m1=Service</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>860</x>
+      <x>1010</x>
       <y>370</y>
       <w>270</w>
       <h>40</h>
@@ -159,13 +159,82 @@ m1=RouteStatistics</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>490</x>
-      <y>500</y>
+      <x>890</x>
+      <y>590</y>
       <w>170</w>
       <h>240</h>
     </coordinates>
     <panel_attributes>lt=-(
 m2=ExchangeInformation</panel_attributes>
     <additional_attributes>20.0;10.0;20.0;210.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>570</x>
+      <y>270</y>
+      <w>200</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>symbol=component</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>550</x>
+      <y>250</y>
+      <w>200</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>symbol=component</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>810</x>
+      <y>540</y>
+      <w>200</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>symbol=component
+&lt;&lt;component&gt;&gt;
+CarHandler</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>800</x>
+      <y>530</y>
+      <w>200</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>symbol=component</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLGeneric</id>
+    <coordinates>
+      <x>820</x>
+      <y>550</y>
+      <w>200</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>symbol=component</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>910</x>
+      <y>460</y>
+      <w>90</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>lt=()-
+m1=ClientData</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;80.0</additional_attributes>
   </element>
 </diagram>
