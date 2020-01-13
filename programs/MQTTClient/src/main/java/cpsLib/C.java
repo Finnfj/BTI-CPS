@@ -37,6 +37,7 @@ public class C {
 	public final static String CMD_EXCHANGESUCCESS = "exchangeSuccess";
 	public final static String CMD_EXCHANGEFAIL = "exchangeFail";
 	public final static String CMD_EXCHANGEDONE = "exchangeDone";
+	public final static String CMD_FORCEDROPOFF = "forceDropoff";
 	
 	// ***SEMANTICS-Section***
 	public final static short I_CMD = 0;
