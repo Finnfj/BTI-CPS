@@ -1,7 +1,5 @@
-package ch;
+package ach;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -9,16 +7,23 @@ import cpsLib.C;
 import cpsLib.CPSApplication;
 
 public class Application extends CPSApplication implements Runnable {
-	public final int maxClients = 512; 
-	public Map<String, Client> clientMap = new HashMap<>();
-	
+
 	public Application() {
-		super("ClientHandler", "broker.hivemq.com");
+		super("ClientHandler", "192.168.2.112");
+	}
+
+	@Override
+	public void run() {
+		try {
+			runSequence();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static void main(String[] args) throws InterruptedException {
-		Application thisClientHandler = new Application();
-		thisClientHandler.run();
+		Application thisCarHandler = new Application();
+		thisCarHandler.run();
 	}
 
 	public void runSequence() throws InterruptedException {
@@ -36,12 +41,6 @@ public class Application extends CPSApplication implements Runnable {
 			// Discover a Client
 			String[] msg = getNext(offerQueue);
 			
-			// Do nothing if we handle enough clients already
-			if (clientMap.size() >= maxClients) {
-				System.out.println("Handling too many clients already");
-				continue;
-			}
-			
 			if (msg[C.I_CMD].equals(C.CMD_INITIALHANDLING)) {
 				// offer Handling
 				sendMessage(C.DISCOVERYSERVICES_NODE + C.TOPICLIMITER + msg[C.I_ID], C.CMD_OFFERHANDLING, null);
@@ -51,26 +50,13 @@ public class Application extends CPSApplication implements Runnable {
 				
 				if (msg[C.I_CMD].equals(C.CMD_PASSCLIENT)) {
 					String clientName = msg[C.I_MSG];
-					//System.out.println("Handle Client " + clientName);
-					clientMap.put(clientName, new Client());
-					// other initial stuff
 					
-					sendMessage(C.CLIENTS_NODE + C.TOPICLIMITER + clientName,null, "Du wurdest auserwï¿½hlt zu connecten");
+					sendMessage(C.CLIENTS_NODE + C.TOPICLIMITER + clientName,null, "Du wurdest auserwählt zu connecten");
 				} else if (msg[C.I_CMD].equals(C.CMD_BEENHANDLED)) {
-					//System.out.println("Client has been handled already");
 					// Client has already been handled
 					continue;
 				}
 			}
-		}
-	}
-
-	@Override
-	public void run() {
-		try {
-			runSequence();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
 		}
 	}
 }
