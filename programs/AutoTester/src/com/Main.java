@@ -14,7 +14,7 @@ public class Main {
 //		ds.Application discoveryService = new ds.Application();
 //		Thread ds = new Thread(discoveryService);
 //		ds.start();
-		int discoveryServices = 3;
+		int discoveryServices = 2;
 		for (int i=0; i<discoveryServices; ++i) {
 			new Thread(new ds.Application()).start();
 		}

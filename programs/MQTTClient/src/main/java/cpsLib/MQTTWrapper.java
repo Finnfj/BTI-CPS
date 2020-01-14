@@ -5,11 +5,13 @@ import java.util.Queue;
 import java.util.UUID;
 
 import com.hivemq.client.mqtt.datatypes.MqttQos;
-import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
-import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
+//import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
+//import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
+import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
+import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 
 public class MQTTWrapper {
-	private Mqtt3AsyncClient client;
+	private Mqtt5AsyncClient client;
 	private UUID myUUID;
 
 	public UUID getMyUUID() {
@@ -20,14 +22,14 @@ public class MQTTWrapper {
 		myUUID = UUID.randomUUID();
 		
 		if (useSSL) {
-			client = Mqtt3Client.builder()
+			client = Mqtt5Client.builder()
 					.identifier(myUUID.toString())
 					.serverHost(host)
 					.serverPort(C.SSLPORT)
 					.sslWithDefaultConfig()
 					.buildAsync();
 		} else {
-			client = Mqtt3Client.builder()
+			client = Mqtt5Client.builder()
 					.identifier(myUUID.toString())
 					.serverHost(host)
 					.serverPort(C.NOSSLPORT)

@@ -10,7 +10,7 @@ public abstract class CPSApplication {
 	
 	public CPSApplication(String name, String address) {
 		super();
-		this.mq = new MQTTWrapper(address, false);
+		this.mq = new MQTTWrapper("broker.hivemq.com", false);
 		this.myName = name+"-"+mq.getMyUUID().toString();
 	}
 	

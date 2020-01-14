@@ -9,9 +9,9 @@ import cpsLib.C;
 import cpsLib.CPSApplication;
 
 public class Application extends CPSApplication implements Runnable {
-	
+	int j = 0;
 	public Application() {
-		super("DiscoveryService", "192.168.2.112");
+		super("DiscoveryService", "127.0.0.1");
 	}
 
 	public static void main(String[] args)  {
@@ -36,6 +36,9 @@ public class Application extends CPSApplication implements Runnable {
 			// Discover a Client
 			String[] msg = getNext(discoveryQueue);
 			String clientName = msg[C.I_ID];
+//
+//			j++;
+//			System.out.println("Clients übergeben: " + j);
 			
 			if (!msg[C.I_CMD].equals(C.CMD_WANTCONNECT)) {
 				continue;

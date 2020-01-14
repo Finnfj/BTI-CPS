@@ -25,7 +25,7 @@ public class Application extends CPSApplication implements Runnable {
 	private List<Passenger> passengerList = new LinkedList<>();
 
 	public Application(double la, double lo) {
-		super("AutonomousCar", "192.168.2.112");
+		super("AutonomousCar", "127.0.0.1");
 		res = new Resources(C.RESOURCE_FROM.FILE);
 		gps = new GPSComponent(C.GPS_MODE.FAKE, new Position(la, lo));
 		currentRoute = res.getRouteMap().get("HAMBURG-HAFENRUNDE");

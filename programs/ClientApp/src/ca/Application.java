@@ -9,7 +9,7 @@ import cpsLib.CPSApplication;
 public class Application extends CPSApplication implements Runnable {
 	
 	public Application() {
-		super("Client", "192.168.2.112");
+		super("Client", "127.0.0.1");
 	}
 
 	public static void main(String[] args) throws InterruptedException {
@@ -35,7 +35,6 @@ public class Application extends CPSApplication implements Runnable {
 		
 		// ask for connection
 		sendMessage(C.DISCOVERY_TOPIC, C.CMD_WANTCONNECT, null);
-		
 		// wait for connection offer
 		getNext(personalQueue);
 		// go on

@@ -13,7 +13,7 @@ public class Application extends CPSApplication implements Runnable {
 	public Map<String, Client> clientMap = new HashMap<>();
 	
 	public Application() {
-		super("ClientHandler", "192.168.2.112");
+		super("ClientHandler", "127.0.0.1");
 	}
 	
 	public static void main(String[] args) throws InterruptedException {
@@ -38,6 +38,7 @@ public class Application extends CPSApplication implements Runnable {
 			
 			// Do nothing if we handle enough clients already
 			if (clientMap.size() >= maxClients) {
+				System.out.println("Handling too many clients already");
 				continue;
 			}
 			
@@ -54,8 +55,9 @@ public class Application extends CPSApplication implements Runnable {
 					clientMap.put(clientName, new Client());
 					// other initial stuff
 					
-					sendMessage(C.CLIENTS_NODE + C.TOPICLIMITER + clientName,null, "Du wurdest auserwählt zu connecten");
+					sendMessage(C.CLIENTS_NODE + C.TOPICLIMITER + clientName,null, "Du wurdest auserwï¿½hlt zu connecten");
 				} else if (msg[C.I_CMD].equals(C.CMD_BEENHANDLED)) {
+					//System.out.println("Client has been handled already");
 					// Client has already been handled
 					continue;
 				}
