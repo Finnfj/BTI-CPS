@@ -1,5 +1,7 @@
 package ach;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -7,9 +9,15 @@ import cpsLib.C;
 import cpsLib.CPSApplication;
 
 public class Application extends CPSApplication implements Runnable {
+	boolean initialized;
+	public final int maxCars = 512; 
+	public Map<String, AutonomousVehicle> carMap = new HashMap<>();
+	BlockingQueue<String> handleQueue;
+	BlockingQueue<String> personalQueue;
 
 	public Application() {
-		super("ClientHandler", "192.168.2.112");
+		super("CarHandler", "192.168.2.112");
+		this.initialized = false;
 	}
 
 	@Override
@@ -27,34 +35,46 @@ public class Application extends CPSApplication implements Runnable {
 	}
 
 	public void runSequence() throws InterruptedException {
-		String handlingTopic = C.HANDLING_EUROPE_TOPIC;
-		
-		// Setup Connection
-		mq.connect(myName, "simplepw");
-		BlockingQueue<String> offerQueue = new LinkedBlockingQueue<>();
-		BlockingQueue<String> personalQueue = new LinkedBlockingQueue<>();
-		mq.subscribe(handlingTopic, offerQueue);
-		mq.subscribe(C.CLIENTHANDLERS_NODE + C.TOPICLIMITER + myName, personalQueue);
-		
-		// Superloop
-		while (true) {
-			// Discover a Client
-			String[] msg = getNext(offerQueue);
+		if (!initialized) {
+			String handlingTopic = C.CARHANDLING_TOPIC;
 			
-			if (msg[C.I_CMD].equals(C.CMD_INITIALHANDLING)) {
-				// offer Handling
-				sendMessage(C.DISCOVERYSERVICES_NODE + C.TOPICLIMITER + msg[C.I_ID], C.CMD_OFFERHANDLING, null);
+			// Setup Connection
+			mq.connect(myName, "simplepw");
+			handleQueue = new LinkedBlockingQueue<>();
+			personalQueue = new LinkedBlockingQueue<>();
+			mq.subscribe(handlingTopic, handleQueue);
+			mq.subscribe(C.CARHANDLERS_NODE + C.TOPICLIMITER + myName, personalQueue);
+			
+			initialized = true;
+			new Thread(this).start();;
+			
+			// Superloop
+			System.out.println("Listening for Cars");
+			while (true) {
+				// Discover a Car
+				String[] msg = getNext(handleQueue);
 				
+				if (msg[C.I_CMD].equals(C.CMD_CARINITIAL)) {
+					if (carMap.size() < maxCars) {
+						// offer Handling
+						sendMessage(C.VEHICLES_NODE + C.TOPICLIMITER + msg[C.I_ID], C.CMD_CAROFFER, null);
+					}
+				}
+			}
+		} else {
+			System.out.println("Listening for personal messages");
+			while (true) {
 				// wait for answer
-				msg = getNext(personalQueue);
+				String[] msg = getNext(personalQueue);
 				
-				if (msg[C.I_CMD].equals(C.CMD_PASSCLIENT)) {
-					String clientName = msg[C.I_MSG];
-					
-					sendMessage(C.CLIENTS_NODE + C.TOPICLIMITER + clientName,null, "Du wurdest auserwählt zu connecten");
-				} else if (msg[C.I_CMD].equals(C.CMD_BEENHANDLED)) {
-					// Client has already been handled
-					continue;
+				switch(msg[C.I_CMD]) {
+				case C.CMD_CARDATA:
+					String Data = msg[C.I_MSG];
+					System.out.println("Ich habe Daten gefressen: " + Data);
+					sendMessage(C.VEHICLES_NODE + C.TOPICLIMITER + msg[C.I_ID],null, "Ich habe deine Daten gefressen");
+					break;
+				default:
+					break;
 				}
 			}
 		}

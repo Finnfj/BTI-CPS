@@ -1,5 +1,6 @@
 package ac;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -8,6 +9,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import cpsLib.C;
 import cpsLib.CPSApplication;
+import cpsLib.MQTTWrapper;
 import cpsLib.Position;
 import cpsLib.Resources;
 import cpsLib.Route;
@@ -22,7 +24,27 @@ public class Application extends CPSApplication implements Runnable {
 	private Resources res;
 	private GPSComponent gps;
 	private Thread gpsThread;
-	private List<Passenger> passengerList = new LinkedList<>();
+	private List<Passenger> passengerList = Collections.synchronizedList(new LinkedList<>());
+	private List<Passenger> doneList = Collections.synchronizedList(new LinkedList<>());
+	private Boolean passChange;
+	
+	
+	public List<Passenger> getDoneList() {
+		return doneList;
+	}
+
+	public Boolean getPassChange() {
+		if (passChange) {
+			passChange = false;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public List<Passenger> getPassengerList() {
+		return passengerList;
+	}
 
 	public Application(double la, double lo) {
 		super("AutonomousCar", "127.0.0.1");
@@ -34,16 +56,9 @@ public class Application extends CPSApplication implements Runnable {
 		gpsThread = new Thread(gps);
 		gpsThread.start();
 	}
-	
-	public Application() {
-		super("AutonomousCar", "192.168.2.112");
-//		res = new Resources(C.RESOURCE_FROM.FILE);
-//		gps = new GPSComponent(C.GPS_MODE.REAL, null);
-//		currentRoute = res.getRouteMap().get("HAMBURG-HAFENRUNDE");
-	}
-	
+
 	public static void main(String[] args) {
-		Application autonomousCar = new Application();
+		Application autonomousCar = new Application(53.552723, 10.006697);
 		Thread t = new Thread(autonomousCar);
 		t.run();
 	}
@@ -51,10 +66,9 @@ public class Application extends CPSApplication implements Runnable {
 	public void runSequence() throws InterruptedException {
 		// Setup Connection
 		mq.connect(myName, "simplepw");
-		BlockingQueue<String> personalQueue = new LinkedBlockingQueue<>();
-		mq.subscribe(C.VEHICLES_NODE + C.TOPICLIMITER + myName, personalQueue);
 		BlockingQueue<String> exchangeQueue = new LinkedBlockingQueue<>();
 		mq.subscribe(C.VEHICLES_NODE + C.TOPICLIMITER + myName + C.TOPICLIMITER + C.EXCHANGE_NODE, exchangeQueue);
+		new Thread(new Synchronization(this)).start();
 		
 		// Superloop
 		while (true) {
@@ -65,57 +79,64 @@ public class Application extends CPSApplication implements Runnable {
 				String[] msg;
 				
 				// start exchange
-				if (passengerList.size() > 0) {
-					// Handshake with Passengers that want to get off
-					for (Passenger p : passengerList) {
-						sendMessage(C.CLIENTS_NODE + C.TOPICLIMITER + p.pasName, C.CMD_STATIONEXCHANGE, currentStation.getName());
-					}
-					
-					// Just a pseudo condition for starting the actual exchange
-					while (gps.getDistance() > EXCHANGE_RANGE) {
-						Thread.sleep(1000);
-					}
-					
-					// Drop off all passengers
-					while (!exchangeQueue.isEmpty()) {
-						msg = getNext(exchangeQueue);
-						if (msg[C.I_CMD].equals(C.CMD_ACCEPTDROPOFF)) {
-							for (Passenger p : passengerList) {
-								if (p.pasName.equals(msg[C.I_ID])) {
-									passengerList.remove(p);
+				synchronized (passengerList) {
+					if (passengerList.size() > 0) {
+						// Handshake with Passengers that want to get off
+						for (Passenger p : passengerList) {
+							sendMessage(C.CLIENTS_NODE + C.TOPICLIMITER + p.pasName, C.CMD_STATIONEXCHANGE, currentStation.getName());
+						}
+						
+						// Just a pseudo condition for starting the actual exchange
+						while (gps.getDistance() > EXCHANGE_RANGE) {
+							Thread.sleep(1000);
+						}
+						
+						// Drop off all passengers
+						while (!exchangeQueue.isEmpty()) {
+							msg = getNext(exchangeQueue);
+							if (msg[C.I_CMD].equals(C.CMD_ACCEPTDROPOFF)) {
+								synchronized (passengerList) {
+									for (Passenger p : passengerList) {
+										if (p.pasName.equals(msg[C.I_ID])) {
+											doneList.add(p);
+											passengerList.remove(p);
+											passChange = true;
+										}
+									}
 								}
+							} else if (msg[C.I_CMD].equals(C.CMD_DECLINEDROPOFF)) {
+								// do nothing
 							}
-						} else if (msg[C.I_CMD].equals(C.CMD_DECLINEDROPOFF)) {
-							// do nothing
+						}
+						
+						// Check for passengers that must get off here and forcefully drop them out
+						for (Passenger p : passengerList) {
+							if (p.target.equals(currentStation)) {
+								doneList.add(p);
+								passengerList.remove(p);
+								passChange = true;
+								sendMessage(C.CLIENTS_NODE + C.TOPICLIMITER + p.pasName, C.CMD_FORCEDROPOFF, currentStation.getName());
+							}
 						}
 					}
 					
-					// Check for passengers that must get off here and forcefully drop them out
-					for (Passenger p : passengerList) {
-						if (p.target.equals(currentStation)) {
-							passengerList.remove(p);
-							sendMessage(C.CLIENTS_NODE + C.TOPICLIMITER + p.pasName, C.CMD_FORCEDROPOFF, currentStation.getName());
+					// Get new Passengers on board
+					sendMessage(C.EXCHANGE_NODE + C.TOPICLIMITER + currentStation.getName(), C.CMD_OFFEREXCHANGE, currentRoute.getName());
+					
+					// Accept new Passengers
+					do {
+						msg = getNext(exchangeQueue, 5000);
+						if (msg[C.I_CMD].equals(C.CMD_ACCEPTEXCHANGE)) {
+							if (passengerList.size() < MAX_PASSENGERS) {
+								Passenger p = new Passenger(msg[C.I_ID], currentRoute.getRoutePoint(msg[C.I_MSG]), currentStation);
+								passengerList.add(p);
+								sendMessage(C.CLIENTS_NODE + C.TOPICLIMITER + p.pasName, C.CMD_EXCHANGESUCCESS, null);
+							} else {
+								sendMessage(C.CLIENTS_NODE + C.TOPICLIMITER + msg[C.I_ID], C.CMD_EXCHANGEFAIL, null);
+							}
 						}
-					}
+					} while (exchangeQueue.isEmpty());
 				}
-				
-				// Get new Passengers on board
-				sendMessage(C.EXCHANGE_NODE + C.TOPICLIMITER + currentStation.getName(), C.CMD_OFFEREXCHANGE, currentRoute.getName());
-				
-				// Accept new Passengers
-				do {
-					msg = getNext(exchangeQueue, 5000);
-					if (msg[C.I_CMD].equals(C.CMD_ACCEPTEXCHANGE)) {
-						if (passengerList.size() < MAX_PASSENGERS) {
-							Passenger p = new Passenger(msg[C.I_ID], currentRoute.getRoutePoint(msg[C.I_MSG]), currentStation);
-							passengerList.add(p);
-							sendMessage(C.CLIENTS_NODE + C.TOPICLIMITER + p.pasName, C.CMD_EXCHANGESUCCESS, null);
-						} else {
-							sendMessage(C.CLIENTS_NODE + C.TOPICLIMITER + msg[C.I_ID], C.CMD_EXCHANGEFAIL, null);
-						}
-					}
-				} while (exchangeQueue.isEmpty());
-				
 				
 				// Drive on
 				currentTarget = currentRoute.getNext(currentTarget);
@@ -142,5 +163,4 @@ public class Application extends CPSApplication implements Runnable {
 			e.printStackTrace();
 		}
 	}
-
 }

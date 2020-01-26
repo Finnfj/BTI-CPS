@@ -4,6 +4,10 @@ import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author Finnbo
+ *
+ */
 public abstract class CPSApplication {
 	protected String myName;
 	protected MQTTWrapper mq;
@@ -14,19 +18,26 @@ public abstract class CPSApplication {
 		this.myName = name+"-"+mq.getMyUUID().toString();
 	}
 	
-	protected String[] getNext(Queue<String> q) throws InterruptedException {
+	public String[] getNext(Queue<String> q) throws InterruptedException {
 		String[] msg;
 		if (q instanceof BlockingQueue<?>) {
 			BlockingQueue<String> b = (BlockingQueue<String>) q;
-			msg = b.take().split(C.LIMITER);
+			msg = b.take().split(C.LIMITER, 3);
 		} else {
-			msg = q.poll().split(C.LIMITER);
+			msg = q.poll().split(C.LIMITER, 3);
 		}
 		//System.out.println("["+myName+"] Receiving: CMD="+msg[0]+", ID="+msg[1]+", MSG="+msg[2]);
 		return msg;
 	}
 
-	protected String[] getNext(BlockingQueue<String> q, int i) throws InterruptedException {
+	
+	/**
+	 * @param q	BlockingQueue to poll
+	 * @param i	Timeout in ms
+	 * @return String[3] or null if empty
+	 * @throws InterruptedException
+	 */
+	public String[] getNext(BlockingQueue<String> q, int i) throws InterruptedException {
 		String msg = null;
 		msg = q.poll(i, TimeUnit.MILLISECONDS);
 		if (msg != null) {
@@ -36,8 +47,16 @@ public abstract class CPSApplication {
 		}
 	}
 	
-	protected void sendMessage(String topic, String cmd, String msg) {
+	public void sendMessage(String topic, String cmd, String msg) {
 		//System.out.println("["+myName+"] Sending: TOPIC="+topic+", CMD="+cmd+", ID="+myName+", MSG="+msg);
 		mq.publish(topic, cmd + C.LIMITER + myName + C.LIMITER + msg);
+	}
+	
+	public MQTTWrapper getMQTT() {
+		return mq;
+	}
+	
+	public String getName() {
+		return myName;
 	}
 }

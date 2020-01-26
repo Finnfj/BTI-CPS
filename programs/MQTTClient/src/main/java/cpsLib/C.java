@@ -10,9 +10,12 @@ public class C {
 	public final static String CARHANDLING_TOPIC = "carHandling";
 	public final static String DISCOVERYSERVICES_NODE = "DiscoveryServices";
 	public final static String CLIENTHANDLERS_NODE = "ClientHandlers";
+	public final static String CARHANDLERS_NODE = "ClientHandlers";
 	public final static String CLIENTS_NODE = "Clients";
 	public final static String VEHICLES_NODE = "Vehicles";
 	public final static String EXCHANGE_NODE = "Exchange";
+	public final static String SYNCH_NODE = "Synchronization";
+	public final static String OPTI_NODE = "Optimization";
 	
 	// Topics for passing Client handling
 	public final static String HANDLING_EUROPE_TOPIC = "passHandling_EU";
@@ -38,6 +41,10 @@ public class C {
 	public final static String CMD_EXCHANGEFAIL = "exchangeFail";
 	public final static String CMD_EXCHANGEDONE = "exchangeDone";
 	public final static String CMD_FORCEDROPOFF = "forceDropoff";
+	public final static String CMD_CARINITIAL = "carInitial";
+	public final static String CMD_CAROFFER = "carOffer";
+	public final static String CMD_CARDATA = "carData";
+	public final static String CMD_CARRECEIVED = "carReceived";
 	
 	// ***SEMANTICS-Section***
 	public final static short I_CMD = 0;
