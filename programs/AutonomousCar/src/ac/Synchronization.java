@@ -12,6 +12,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import cpsLib.C;
 import cpsLib.MQTTWrapper;
+import cpsLib.Passenger;
 
 public class Synchronization implements Runnable {
 	enum connectionState {
@@ -78,12 +79,13 @@ public class Synchronization implements Runnable {
 		}
 		
 		System.out.println("Synchronization started");
-		
+		int i=1;
 		while (true) {
 			if (conn == connectionState.Disconnected) {
 				a.sendMessage(C.CARHANDLING_TOPIC, C.CMD_CARINITIAL, null);
 			} else if (conn == connectionState.Connected) {
-				if (a.getPassChange() || needSynch) {
+				if (a.getPassChange() || needSynch || i==1) {
+					i++;
 					synchronized (passengers) {
 						// Save file
 						try {
@@ -117,6 +119,7 @@ public class Synchronization implements Runnable {
 								synch = synchState.Sent;
 								lastSynch = System.currentTimeMillis();
 								needSynch = false;
+								System.out.println("Synching Data...");
 							} catch (Exception e) {
 								System.out.println("Sending failed!");
 								e.printStackTrace();
@@ -156,6 +159,7 @@ public class Synchronization implements Runnable {
 							}
 						}
 						synch = synchState.Idle;
+						System.out.println("Data synchronized.");
 					}
 				default:
 					break;

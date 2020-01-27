@@ -26,7 +26,7 @@ public abstract class CPSApplication {
 		} else {
 			msg = q.poll().split(C.LIMITER, 3);
 		}
-		//System.out.println("["+myName+"] Receiving: CMD="+msg[0]+", ID="+msg[1]+", MSG="+msg[2]);
+		System.out.println("["+myName+"] Receiving: CMD="+msg[0]+", ID="+msg[1]+", MSG="+msg[2]);
 		return msg;
 	}
 
@@ -48,7 +48,7 @@ public abstract class CPSApplication {
 	}
 	
 	public void sendMessage(String topic, String cmd, String msg) {
-		//System.out.println("["+myName+"] Sending: TOPIC="+topic+", CMD="+cmd+", ID="+myName+", MSG="+msg);
+		System.out.println("["+myName+"] Sending: TOPIC="+topic+", CMD="+cmd+", ID="+myName+", MSG="+msg);
 		mq.publish(topic, cmd + C.LIMITER + myName + C.LIMITER + msg);
 	}
 	

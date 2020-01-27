@@ -6,5 +6,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/ClientHandler"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/DiscoveryService"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/MQTTClient"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/AutonomousCar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/CarHandler"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

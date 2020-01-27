@@ -10,7 +10,7 @@ public class C {
 	public final static String CARHANDLING_TOPIC = "carHandling";
 	public final static String DISCOVERYSERVICES_NODE = "DiscoveryServices";
 	public final static String CLIENTHANDLERS_NODE = "ClientHandlers";
-	public final static String CARHANDLERS_NODE = "ClientHandlers";
+	public final static String CARHANDLERS_NODE = "CarHandlers";
 	public final static String CLIENTS_NODE = "Clients";
 	public final static String VEHICLES_NODE = "Vehicles";
 	public final static String EXCHANGE_NODE = "Exchange";
@@ -45,6 +45,7 @@ public class C {
 	public final static String CMD_CAROFFER = "carOffer";
 	public final static String CMD_CARDATA = "carData";
 	public final static String CMD_CARRECEIVED = "carReceived";
+	public final static String CMD_DEBUG = "carReceived";
 	
 	// ***SEMANTICS-Section***
 	public final static short I_CMD = 0;

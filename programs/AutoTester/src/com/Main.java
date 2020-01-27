@@ -3,6 +3,7 @@ package com;
 public class Main {
 
 	public static void main(String[] args) throws InterruptedException {
+		/*
 //		ch.Application clientHandler = new ch.Application();
 //		Thread ch = new Thread(clientHandler);
 //		ch.start();
@@ -30,6 +31,18 @@ public class Main {
 		while (true) {
 			Thread.sleep(500);
 			System.out.println(System.currentTimeMillis());
+		}*/
+		
+		ac.Application car = new ac.Application(0, 0);
+		Thread ac = new Thread(car);
+		ac.start();
+		
+		ach.Application carHandler = new ach.Application();
+		Thread ach = new Thread(carHandler);
+		ach.start();
+		
+		while (true) {
+			
 		}
 	}
 }

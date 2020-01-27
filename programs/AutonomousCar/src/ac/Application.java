@@ -9,7 +9,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import cpsLib.C;
 import cpsLib.CPSApplication;
-import cpsLib.MQTTWrapper;
+import cpsLib.Passenger;
 import cpsLib.Position;
 import cpsLib.Resources;
 import cpsLib.Route;
@@ -26,8 +26,9 @@ public class Application extends CPSApplication implements Runnable {
 	private Thread gpsThread;
 	private List<Passenger> passengerList = Collections.synchronizedList(new LinkedList<>());
 	private List<Passenger> doneList = Collections.synchronizedList(new LinkedList<>());
-	private Boolean passChange;
+	private Boolean passChange = false;
 	
+	// TODO: Sanity check when passengers are restored
 	
 	public List<Passenger> getDoneList() {
 		return doneList;

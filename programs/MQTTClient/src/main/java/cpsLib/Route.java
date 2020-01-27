@@ -6,24 +6,32 @@ import java.util.List;
 public class Route {
 	private List<RoutePoint> route = new LinkedList<>();
 	private String name;
+	private String id;
 	
-	public Route(String name, LinkedList<RoutePoint> route) {
+	public String getID() {
+		return id;
+	}
+
+	public Route(String id, String name, LinkedList<RoutePoint> route) {
 		super();
+		this.id = id;
 		this.route = route;
 		this.name = name;
 	}
 	
-	public Route(String name) {
-		super();
+	public Route(String id, String name, RoutePoint... points) {
 		this.name = name;
-	}
-	
-	public Route(String name, RoutePoint... points) {
-		this.name = name;
+		this.id = id;
 		
 		for (RoutePoint p : points) {
 			route.add(p);
 		}
+	}
+	
+	public Route(String id, String name, List<RoutePoint> rps) {
+		this.name = name;
+		this.id = id;
+		route = rps;
 	}
 	
 	public List<RoutePoint> getRoute() {
@@ -60,5 +68,14 @@ public class Route {
 			}
 		}
 		return null;
+	}
+	
+	@Override
+	public String toString() {
+		String s = new String(this.name + "\n");
+		for (RoutePoint r : route) {
+			s += r.toString() + "\n";
+		}
+		return s;
 	}
 }

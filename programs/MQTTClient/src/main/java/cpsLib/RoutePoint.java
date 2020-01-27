@@ -48,7 +48,12 @@ public class RoutePoint {
 			return (other.getlatVal() == latVal && other.getlongVal() == longVal && other.getName() == name);
 		} else {
 			return false;	
-		}
-		
+		}	
+	}
+
+	
+	@Override
+	public String toString() {
+		return name + ": " + latVal + ", " + longVal;
 	}
 }

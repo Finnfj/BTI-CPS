@@ -46,7 +46,7 @@ public class Application extends CPSApplication implements Runnable {
 			mq.subscribe(C.CARHANDLERS_NODE + C.TOPICLIMITER + myName, personalQueue);
 			
 			initialized = true;
-			new Thread(this).start();;
+			new Thread(this).start();
 			
 			// Superloop
 			System.out.println("Listening for Cars");
@@ -57,7 +57,7 @@ public class Application extends CPSApplication implements Runnable {
 				if (msg[C.I_CMD].equals(C.CMD_CARINITIAL)) {
 					if (carMap.size() < maxCars) {
 						// offer Handling
-						sendMessage(C.VEHICLES_NODE + C.TOPICLIMITER + msg[C.I_ID], C.CMD_CAROFFER, null);
+						sendMessage(C.VEHICLES_NODE + C.TOPICLIMITER + msg[C.I_ID] + C.TOPICLIMITER + C.SYNCH_NODE, C.CMD_CAROFFER, null);
 					}
 				}
 			}
@@ -71,7 +71,7 @@ public class Application extends CPSApplication implements Runnable {
 				case C.CMD_CARDATA:
 					String Data = msg[C.I_MSG];
 					System.out.println("Ich habe Daten gefressen: " + Data);
-					sendMessage(C.VEHICLES_NODE + C.TOPICLIMITER + msg[C.I_ID],null, "Ich habe deine Daten gefressen");
+					sendMessage(C.VEHICLES_NODE + C.TOPICLIMITER + msg[C.I_ID] + C.TOPICLIMITER + C.SYNCH_NODE,C.CMD_CARRECEIVED, "Ich habe deine Daten gefressen");
 					break;
 				default:
 					break;
