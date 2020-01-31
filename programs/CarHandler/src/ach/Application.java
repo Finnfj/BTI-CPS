@@ -1,23 +1,29 @@
 package ach;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import cpsLib.C;
 import cpsLib.CPSApplication;
+import cpsLib.Passenger;
+import cpsLib.DatabaseHandler;
 
 public class Application extends CPSApplication implements Runnable {
-	boolean initialized;
+	private boolean initialized;
 	public final int maxCars = 512; 
 	public Map<String, AutonomousVehicle> carMap = new HashMap<>();
-	BlockingQueue<String> handleQueue;
-	BlockingQueue<String> personalQueue;
+	private BlockingQueue<String> handleQueue;
+	private BlockingQueue<String> personalQueue;
+	private DatabaseHandler db;
 
 	public Application() {
 		super("CarHandler", "192.168.2.112");
 		this.initialized = false;
+		this.db = new DatabaseHandler();
 	}
 
 	@Override
@@ -34,6 +40,7 @@ public class Application extends CPSApplication implements Runnable {
 		thisCarHandler.run();
 	}
 
+	@SuppressWarnings("unchecked")
 	public void runSequence() throws InterruptedException {
 		if (!initialized) {
 			String handlingTopic = C.CARHANDLING_TOPIC;
@@ -69,8 +76,16 @@ public class Application extends CPSApplication implements Runnable {
 				
 				switch(msg[C.I_CMD]) {
 				case C.CMD_CARDATA:
-					String Data = msg[C.I_MSG];
-					System.out.println("Ich habe Daten gefressen: " + Data);
+
+					Optional<Passenger> inOpt = convertFrom(msg[C.I_MSG]);
+					
+					if (inOpt.isPresent()) {
+						List<Passenger> pasList = (List<Passenger>) inOpt.get();
+						for (Passenger p : pasList) {
+							db.setClient(p);
+						}
+					}
+					
 					sendMessage(C.VEHICLES_NODE + C.TOPICLIMITER + msg[C.I_ID] + C.TOPICLIMITER + C.SYNCH_NODE,C.CMD_CARRECEIVED, "Ich habe deine Daten gefressen");
 					break;
 				default:

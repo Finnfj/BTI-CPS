@@ -60,14 +60,16 @@ public class GPSComponent implements Runnable {
 	private void runSequence() throws InterruptedException {
 		while (running) {
 			if (mode == C.GPS_MODE.FAKE) {
-				final double seconds = 5;
+				final double seconds = 1;
 				double onStart = System.currentTimeMillis();
-				speed = 8 + ((new Random()).nextDouble() * 9);
 				double remainingDistance = distanceOnGeoid(myPos.latval, myPos.longval, tarPos.latval, tarPos.longval);
+				//speed = 8 + ((new Random()).nextDouble() * 9);
+				speed = remainingDistance < 1000 ? 80 + ((new Random()).nextDouble() * 90) : 800 + ((new Random()).nextDouble() * 900) ;
 				double distPercentage = speed / remainingDistance;
-				myPos.latval = (tarPos.latval - myPos.latval) * distPercentage * seconds;
-				myPos.longval = (tarPos.longval - myPos.longval) * distPercentage * seconds;
+				myPos.latval += (tarPos.latval - myPos.latval) * distPercentage * seconds;
+				myPos.longval += (tarPos.longval - myPos.longval) * distPercentage * seconds;
 				distance = distanceOnGeoid(myPos.latval, myPos.longval, tarPos.latval, tarPos.longval);
+				//System.out.println("My position: lat=" + myPos.latval + ", long=" + myPos.longval + "\nTarget Position: lat="+tarPos.latval+", long="+tarPos.longval);
 				while ((System.currentTimeMillis() - onStart) < 1000*seconds) {
 					Thread.sleep(100);
 				}

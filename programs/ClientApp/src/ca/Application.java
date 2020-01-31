@@ -1,15 +1,68 @@
 package ca;
 
+import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import cpsLib.C;
 import cpsLib.CPSApplication;
+import cpsLib.Passenger;
+import cpsLib.Passenger.PassengerState;
+import cpsLib.Resources;
+import cpsLib.Route;
+import cpsLib.RoutePoint;
 
 public class Application extends CPSApplication implements Runnable {
-	
+	private Passenger thisPassenger = null;
+	private Map<String, Route> routeMap;
+
 	public Application() {
 		super("Client", "127.0.0.1");
+
+		Resources res = new Resources(C.RESOURCE_FROM.DB);
+		
+		Map<String, Route> routeMap = res.getRouteMap();
+		Object[] Keys = routeMap.keySet().toArray();
+		
+		Random r = new Random();
+		
+		Route route = routeMap.get(Keys[r.nextInt(Keys.length)]);
+		RoutePoint target = route.getRoute().get(r.nextInt(route.getRoute().size()));
+		RoutePoint start = target;
+		while (target.equals(start)) {
+			start = route.getRoute().get(r.nextInt(route.getRoute().size()));
+		}
+
+		thisPassenger = new Passenger(myName, target, start, route);
+	}
+	
+	public Application(String name) {
+		super("Client", "127.0.0.1");
+		myName = name;
+		
+		Resources res = new Resources(C.RESOURCE_FROM.DB);
+		
+		Map<String, Route> routeMap = res.getRouteMap();
+		Object[] Keys = routeMap.keySet().toArray();
+		
+		Random r = new Random();
+		
+		Route route = routeMap.get(Keys[r.nextInt(Keys.length)]);
+		RoutePoint target = route.getRoute().get(r.nextInt(route.getRoute().size()));
+		RoutePoint start = target;
+		while (target.equals(start)) {
+			start = route.getRoute().get(r.nextInt(route.getRoute().size()));
+		}
+
+		thisPassenger = new Passenger(myName, target, start, route);
+	}
+	
+	public Application(String name, RoutePoint start, RoutePoint target, Route route) {
+		super("Client", "127.0.0.1");
+		myName = name;
+		thisPassenger = new Passenger(myName, target, start, route);
 	}
 
 	public static void main(String[] args) throws InterruptedException {
@@ -28,18 +81,88 @@ public class Application extends CPSApplication implements Runnable {
 	}
 	
 	public void runSequence() throws InterruptedException {
+		// Get resources
+		Resources r = new Resources(C.RESOURCE_FROM.DB);
+		routeMap = r.getRouteMap();
+		
+		// Choose start and target
+		if (thisPassenger.start == null) {
+			// ask for start and target in interface
+		}
+		
 		// Setup Connection
 		mq.connect(myName, "simplepw");
 		BlockingQueue<String> personalQueue = new LinkedBlockingQueue<>();
 		mq.subscribe(C.CLIENTS_NODE + C.TOPICLIMITER + myName, personalQueue);
+		mq.subscribe(C.EXCHANGE_NODE + C.TOPICLIMITER + thisPassenger.start.getName(), personalQueue);
 		
 		// ask for connection
 		sendMessage(C.DISCOVERY_TOPIC, C.CMD_WANTCONNECT, null);
-		// wait for connection offer
-		getNext(personalQueue);
-		// go on
+		
+		String[] msg;
+		while (true) {
+			msg = getNext(personalQueue);
+			
+			switch (msg[C.I_CMD]) {
+			case C.CMD_OFFERCONNECT:
+				if (thisPassenger.state == PassengerState.Disconnected) {
+					thisPassenger.currHandler = msg[C.I_ID];
+					thisPassenger.state = PassengerState.Connected;
+					
+					Optional<String> outOpt = convertToString(thisPassenger);
 
-		System.out.println("Client " + myName + " succesfully connected.");
+					sendMessage(C.CLIENTHANDLERS_NODE + C.TOPICLIMITER + thisPassenger.currHandler,
+							C.CMD_PASSREQUEST, outOpt.get());
+				}
+				break;
+			case C.CMD_GOTREQUEST:
+				if (thisPassenger.state == PassengerState.Connected) {
+					thisPassenger.state = PassengerState.Requested;
+				}
+			case C.CMD_OFFEREXCHANGE:
+				if (thisPassenger.state == PassengerState.Requested) {
+					if (msg[C.I_MSG].equals(thisPassenger.currRoute.getName())) {
+						thisPassenger.state = PassengerState.Waiting;
+						Optional<String> outOpt = convertToString(thisPassenger);
+						
+						sendMessage(C.VEHICLES_NODE + C.TOPICLIMITER + msg[C.I_ID] 
+								+ C.TOPICLIMITER + C.EXCHANGE_NODE, C.CMD_ACCEPTEXCHANGE, outOpt.get());
+					}
+				}
+				break;
+			case C.CMD_EXCHANGESUCCESS:
+				if (thisPassenger.state == PassengerState.Waiting) {
+					thisPassenger.currCar = msg[C.I_ID];
+					thisPassenger.state = PassengerState.Seated;
+				}
+				break;
+			case C.CMD_EXCHANGEFAIL:
+				if (thisPassenger.state == PassengerState.Waiting) {
+					thisPassenger.state = PassengerState.Requested;
+				}
+				break;
+			case C.CMD_STATIONEXCHANGE:
+				if (thisPassenger.state == PassengerState.Seated) {
+					if (msg[C.I_MSG].equals(thisPassenger.target.getName())) {
+						thisPassenger.state = PassengerState.Arrived;
+						sendMessage(C.VEHICLES_NODE + C.TOPICLIMITER + thisPassenger.currCar + C.TOPICLIMITER + C.EXCHANGE_NODE, C.CMD_ACCEPTDROPOFF, null);
+					} else {
+						sendMessage(C.VEHICLES_NODE + C.TOPICLIMITER + thisPassenger.currCar + C.TOPICLIMITER + C.EXCHANGE_NODE, C.CMD_DECLINEDROPOFF, null);
+					}
+				}
+				break;
+			case C.CMD_FORCEDROPOFF:
+				thisPassenger.state = PassengerState.Arrived;
+				break;
+			default:
+				break;
+			}
+			
+			if (thisPassenger.state == PassengerState.Arrived) {
+				System.out.println(myName + ": Arrived at Station " + thisPassenger.target.getName());
+				break;
+			}
+		}
 		mq.disconnect();
 	}
 }

@@ -15,7 +15,7 @@ public final class Resources {
 		if (mode == C.RESOURCE_FROM.FILE) {
 			routeMap = new HashMap<>();
 			
-			routeMap.put("hamburg-grosserunde", new Route("hamburg-grosserunde", "Hamburg - Groﬂe Runde", 
+			routeMap.put("hamburg-grosserunde", new Route("hamburg-grosserunde", "Hamburg - Grosse Runde", 
 					new RoutePoint("Strand-Pauli", 53.3247, 9.57415),
 					new RoutePoint("Dammtor", 53.563446, 9.985735),
 					new RoutePoint("Planetarium Hamburg", 53.59726, 10.00895),

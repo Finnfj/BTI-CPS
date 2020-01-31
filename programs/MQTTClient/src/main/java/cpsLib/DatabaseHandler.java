@@ -11,7 +11,7 @@ import cpsLib.Passenger.PassengerState;
 public class DatabaseHandler {
 	// JDBC driver name and database URL
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	static final String DB_URL = "jdbc:mysql://localhost/cps";
+	static final String DB_URL = "jdbc:mysql://localhost/cps?autoReconnect=true";
 	static final String PASSENGER_QUERY = "SELECT * FROM clients WHERE id = ";
 	static final String ROUTE_QUERY = "SELECT * FROM routes WHERE id = ";
 	static final String INSERTROUTE_QUERY = "INSERT INTO routes VALUES ";
@@ -19,8 +19,10 @@ public class DatabaseHandler {
 	static final String CREATEROUTE_QUERY_2 = "` (name VARCHAR(50), lat FLOAT, lon FLOAT, PRIMARY KEY (name))";
 	static final String GETROUTE_QUERY = "SELECT * FROM ";
 	static final String ALLROUTE_QUERY = "SELECT * FROM routes";
+	static final String ALLCLIENTS_QUERY = "SELECT * FROM clients";
 	static final String INSERT_QUERY = "INSERT INTO ";
 	static final String DELETEROUTE_QUERY = "DELETE FROM routes WHERE id = ";
+	static final String DELETECLIENT_QUERY = "DELETE FROM clients WHERE id = ";
 	static final String REMOVEROUTE_QUERY = "DROP TABLE ";
 	static final String UPDATECLIENT_QUERY = "UPDATE clients SET ";
 
@@ -39,20 +41,35 @@ public class DatabaseHandler {
 	public DatabaseHandler() {
 		try {
 			// Open a connection
-			System.out.println("Connecting to database...");
+			//System.out.println("Connecting to database...");
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			stmt = conn.createStatement();
-			System.out.println("Connection succesful");
+			//System.out.println("Connection succesful");
 		} catch (SQLException s) {
 			s.printStackTrace();
 		}
 	}
+	
+	private void checkConnection() {
+		try {
+			if (!conn.isValid(5000)) {
+				conn.close();
+				conn = DriverManager.getConnection(DB_URL, USER, PASS);
+				stmt = conn.createStatement();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public Passenger getClient(String id) {
+		checkConnection();
 		Passenger pas = null;
 		try {
 			resultSet = stmt.executeQuery(PASSENGER_QUERY + "\""+id+"\"");
 			if (resultSet.next()) {
+				String handler = resultSet.getString("handler");
+				String car = resultSet.getString("car");
 				String start = resultSet.getString("start");
 				String target = resultSet.getString("target");
 				PassengerState state = PassengerState.values()[resultSet.getInt("state")];
@@ -60,15 +77,56 @@ public class DatabaseHandler {
 				pas = new Passenger(id, 
 						r.getRoutePoint(start), 
 						r.getRoutePoint(target), 
-						state, r);
+						r, state);
+				pas.currHandler = handler;
+				pas.currCar = car;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return pas;
 	}
+
+	public boolean remClient(String id) {
+		checkConnection();
+		try {
+			return stmt.execute(DELETECLIENT_QUERY + "\""+id+"\" AND state = 5");	// only remove with finished state
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public List<Passenger> getClients() {
+		checkConnection();
+		List<Passenger> pasList = new LinkedList<>();
+		
+		try {
+			resultSet = stmt.executeQuery(ALLCLIENTS_QUERY);
+			while (resultSet.next()) {
+				String name = resultSet.getString("id");
+				String handler = resultSet.getString("handler");
+				String car = resultSet.getString("car");
+				String start = resultSet.getString("start");
+				String target = resultSet.getString("target");
+				PassengerState state = PassengerState.values()[resultSet.getInt("state")];
+				Route r = getRoute(resultSet.getString("route"));
+				Passenger pas = new Passenger(name, 
+						r.getRoutePoint(start), 
+						r.getRoutePoint(target), 
+						r, state);
+				pas.currHandler = handler;
+				pas.currCar = car;
+				pasList.add(pas);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return pasList;
+	}
 	
 	public Boolean setClient(Passenger pas) {
+		checkConnection();
 		Boolean ret = false;
 		
 		try {
@@ -78,6 +136,7 @@ public class DatabaseHandler {
 				stmt.execute(UPDATECLIENT_QUERY 
 						+ "state = " + pas.state.ordinal()
 						+ ", handler = '" + pas.currHandler
+						+ "', car = '" + pas.currCar
 						+ "', start = '" + pas.start.getName()
 						+ "', target = '" + pas.target.getName()
 						+ "', route = '" + pas.currRoute.getID()
@@ -102,15 +161,23 @@ public class DatabaseHandler {
 	}
 	
 	public Route getRoute(String id) {
+		checkConnection();
 		Route route = null;
+		ResultSet tmp;
+		Statement tmpstmt = null;
 		try {
-			resultSet = stmt.executeQuery(ROUTE_QUERY + "\""+id+"\"");
-			if (resultSet.next()) {
-				String name = resultSet.getString("name");
-				resultSet = stmt.executeQuery(GETROUTE_QUERY + "`" + id + "`");
+			tmpstmt = conn.createStatement();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		try {
+			tmp = tmpstmt.executeQuery(ROUTE_QUERY + "\""+id+"\"");
+			if (tmp.next()) {
+				String name = tmp.getString("name");
+				tmp = tmpstmt.executeQuery(GETROUTE_QUERY + "`" + id + "`");
 				List<RoutePoint> rps = new LinkedList<>();
-				while (resultSet.next()) {
-					rps.add(new RoutePoint(resultSet.getString("name"), resultSet.getFloat("lat"), resultSet.getFloat("lon")));
+				while (tmp.next()) {
+					rps.add(new RoutePoint(tmp.getString("name"), tmp.getFloat("lat"), tmp.getFloat("lon")));
 				}
 				route = new Route(id, name, rps);
 			}
@@ -121,6 +188,7 @@ public class DatabaseHandler {
 	}
 	
 	public Map<String, Route> getRoutes() {
+		checkConnection();
 		Map<String, Route> routeMap = new HashMap<>();
 		
 		try {
@@ -136,6 +204,7 @@ public class DatabaseHandler {
 	}
 	
 	public Boolean addRoute(String id, Route r) {
+		checkConnection();
 		try {
 			resultSet = stmt.executeQuery(ROUTE_QUERY + "\""+id+"\"");
 			if (resultSet.next()) {
@@ -162,6 +231,7 @@ public class DatabaseHandler {
 	}
 	
 	public Boolean remRoute(String id) {
+		checkConnection();
 		try {
 			resultSet = stmt.executeQuery(ROUTE_QUERY + "\""+id+"\"");
 			if (resultSet.next()) {
@@ -180,14 +250,17 @@ public class DatabaseHandler {
 	
 	public static void main(String[] args) {
 		DatabaseHandler db = new DatabaseHandler();
-		Resources r = new Resources(C.RESOURCE_FROM.FILE);
-		Route route = r.getRouteMap().get("hamburg-grosserunde");
-		db.addRoute("hamburg-grosserunde", route);
+		List<Passenger> pasList = db.getClients();
+		
+		for (Passenger p : pasList) {
+			System.out.println(p.pasName);
+		}
+		
+//		Resources r = new Resources(C.RESOURCE_FROM.FILE);
+//		Route route = r.getRouteMap().get("hamburg-grosserunde");
+//		db.remRoute("hamburg-grosserunde");
+//		db.addRoute("hamburg-grosserunde", route);
 		//db.remRoute(route.getName().toLowerCase());
 		
-		Passenger p = new Passenger("James Bond", route.getRoute().get(1), route.getRoute().get(3), PassengerState.Requested, route);
-		db.setClient(p);
-		Passenger p2 = db.getClient("James Bond");
-		System.out.println(p2);
 	}// end main
 }

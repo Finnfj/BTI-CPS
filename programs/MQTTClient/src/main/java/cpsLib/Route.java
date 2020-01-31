@@ -1,9 +1,14 @@
 package cpsLib;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Route {
+public class Route implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4708960703192093317L;
 	private List<RoutePoint> route = new LinkedList<>();
 	private String name;
 	private String id;
@@ -33,7 +38,7 @@ public class Route {
 		this.id = id;
 		route = rps;
 	}
-	
+
 	public List<RoutePoint> getRoute() {
 		return route;
 	}

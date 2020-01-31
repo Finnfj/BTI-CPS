@@ -1,16 +1,18 @@
 package ac;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import cpsLib.C;
+import cpsLib.CPSApplication;
 import cpsLib.MQTTWrapper;
 import cpsLib.Passenger;
 
@@ -32,6 +34,7 @@ public class Synchronization implements Runnable {
 	private String fileDoneName;
 	private MQTTWrapper mq;
 	private BlockingQueue<String> personalQueue;
+	private List<Passenger> sentDone = new LinkedList<>();
 	private connectionState conn;
 	private synchState synch;
 	private String currentHandler;
@@ -79,13 +82,11 @@ public class Synchronization implements Runnable {
 		}
 		
 		System.out.println("Synchronization started");
-		int i=1;
 		while (true) {
 			if (conn == connectionState.Disconnected) {
 				a.sendMessage(C.CARHANDLING_TOPIC, C.CMD_CARINITIAL, null);
 			} else if (conn == connectionState.Connected) {
-				if (a.getPassChange() || needSynch || i==1) {
-					i++;
+				if (a.getPassChange() || needSynch) {
 					synchronized (passengers) {
 						// Save file
 						try {
@@ -109,17 +110,17 @@ public class Synchronization implements Runnable {
 						if (synch == synchState.Idle) {
 							// Send Data
 							try {
-								ByteArrayOutputStream stream = new ByteArrayOutputStream();
-								ObjectOutputStream out = new ObjectOutputStream(stream);
 								List<Passenger> allPass = new LinkedList<>();
 								allPass.addAll(passengers);
 								allPass.addAll(done);
-								out.writeObject(allPass);
-								a.sendMessage(C.CARHANDLERS_NODE + C.TOPICLIMITER + currentHandler, C.CMD_CARDATA, new String(stream.toByteArray()));
+								Optional<String> outOpt = CPSApplication.convertToString((Serializable) allPass);
+								
+								a.sendMessage(C.CARHANDLERS_NODE + C.TOPICLIMITER + currentHandler, C.CMD_CARDATA, outOpt.get());
+								sentDone.addAll(done);
 								synch = synchState.Sent;
 								lastSynch = System.currentTimeMillis();
 								needSynch = false;
-								System.out.println("Synching Data...");
+								//System.out.println("Synching Data...");
 							} catch (Exception e) {
 								System.out.println("Sending failed!");
 								e.printStackTrace();
@@ -130,6 +131,7 @@ public class Synchronization implements Runnable {
 							// Try to synch asap after current Data was received or timed out
 							needSynch = true;
 						}
+						passengers.notifyAll();
 					}
 				}
 			}
@@ -153,13 +155,13 @@ public class Synchronization implements Runnable {
 					break;
 				case C.CMD_CARRECEIVED:
 					if (msg[C.I_ID].equals(currentHandler)) {
-						if (!needSynch) {
-							synchronized (passengers) {
-								done.clear();
-							}
+						synchronized (passengers) {
+							done.removeAll(sentDone);
+							sentDone.clear();
+							passengers.notifyAll();
 						}
 						synch = synchState.Idle;
-						System.out.println("Data synchronized.");
+						//System.out.println("Data synchronized.");
 					}
 				default:
 					break;

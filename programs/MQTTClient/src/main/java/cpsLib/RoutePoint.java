@@ -1,6 +1,12 @@
 package cpsLib;
 
-public class RoutePoint {
+import java.io.Serializable;
+
+public class RoutePoint implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1318539248049971010L;
 	private String name;
 	private double latVal;
 	private double longVal;
@@ -45,7 +51,8 @@ public class RoutePoint {
 	public boolean equals(Object o) {
 		if (o instanceof RoutePoint) {
 			RoutePoint other = (RoutePoint) o;
-			return (other.getlatVal() == latVal && other.getlongVal() == longVal && other.getName() == name);
+			// return (other.getlatVal() == latVal && other.getlongVal() == longVal && other.getName() == name);
+			return (other.getName() == name);
 		} else {
 			return false;	
 		}	

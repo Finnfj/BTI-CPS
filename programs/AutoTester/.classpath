@@ -8,5 +8,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/MQTTClient"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/AutonomousCar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/CarHandler"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Registry"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

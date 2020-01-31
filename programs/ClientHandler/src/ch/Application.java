@@ -1,16 +1,20 @@
 package ch;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import cpsLib.C;
 import cpsLib.CPSApplication;
+import cpsLib.DatabaseHandler;
+import cpsLib.Passenger;
+import cpsLib.Passenger.PassengerState;
 
 public class Application extends CPSApplication implements Runnable {
 	public final int maxClients = 512; 
-	public Map<String, Client> clientMap = new HashMap<>();
+	private boolean initialized;
+	private BlockingQueue<String> offerQueue = new LinkedBlockingQueue<>();
+	private BlockingQueue<String> personalQueue = new LinkedBlockingQueue<>();
 	
 	public Application() {
 		super("ClientHandler", "broker.hivemq.com");
@@ -22,44 +26,61 @@ public class Application extends CPSApplication implements Runnable {
 	}
 
 	public void runSequence() throws InterruptedException {
-		String handlingTopic = C.HANDLING_EUROPE_TOPIC;
-		
-		// Setup Connection
-		mq.connect(myName, "simplepw");
-		BlockingQueue<String> offerQueue = new LinkedBlockingQueue<>();
-		BlockingQueue<String> personalQueue = new LinkedBlockingQueue<>();
-		mq.subscribe(handlingTopic, offerQueue);
-		mq.subscribe(C.CLIENTHANDLERS_NODE + C.TOPICLIMITER + myName, personalQueue);
-		
-		// Superloop
-		while (true) {
-			// Discover a Client
-			String[] msg = getNext(offerQueue);
+		String[] msg;
+		if (!initialized) {
+			String handlingTopic = C.HANDLING_EUROPE_TOPIC;
 			
-			// Do nothing if we handle enough clients already
-			if (clientMap.size() >= maxClients) {
-				System.out.println("Handling too many clients already");
-				continue;
+			// Setup Connection
+			mq.connect(myName, "simplepw");
+			mq.subscribe(handlingTopic, offerQueue);
+			mq.subscribe(C.CLIENTHANDLERS_NODE + C.TOPICLIMITER + myName, personalQueue);
+			
+			initialized = true;
+			new Thread(this).start();
+			
+			// Superloop
+			while (true) {
+				// Discover Clients
+				msg = getNext(offerQueue);
+	
+				if (msg != null) {
+					if (msg[C.I_CMD].equals(C.CMD_INITIALHANDLING)) {
+						// offer Handling
+						sendMessage(C.DISCOVERYSERVICES_NODE + C.TOPICLIMITER
+								+ msg[C.I_ID], C.CMD_OFFERHANDLING, null);
+					}
+				}
 			}
-			
-			if (msg[C.I_CMD].equals(C.CMD_INITIALHANDLING)) {
-				// offer Handling
-				sendMessage(C.DISCOVERYSERVICES_NODE + C.TOPICLIMITER + msg[C.I_ID], C.CMD_OFFERHANDLING, null);
-				
-				// wait for answer
+		} else {
+			// Superloop
+			while (true) {
+				DatabaseHandler db = new DatabaseHandler();
+				// Personal messages
 				msg = getNext(personalQueue);
-				
-				if (msg[C.I_CMD].equals(C.CMD_PASSCLIENT)) {
-					String clientName = msg[C.I_MSG];
-					//System.out.println("Handle Client " + clientName);
-					clientMap.put(clientName, new Client());
-					// other initial stuff
-					
-					sendMessage(C.CLIENTS_NODE + C.TOPICLIMITER + clientName,null, "Du wurdest auserw�hlt zu connecten");
-				} else if (msg[C.I_CMD].equals(C.CMD_BEENHANDLED)) {
-					//System.out.println("Client has been handled already");
-					// Client has already been handled
-					continue;
+	
+				if (msg != null) {
+					switch (msg[C.I_CMD]) {
+					case C.CMD_PASSCLIENT:
+						sendMessage(C.CLIENTS_NODE + C.TOPICLIMITER + msg[C.I_MSG],
+								C.CMD_OFFERCONNECT, null);
+						break;
+					case C.CMD_PASSREQUEST:
+						// deserialize passenger
+						Passenger pas = null;
+	
+						Optional<Passenger> inOpt = convertFrom(msg[C.I_MSG]);
+						pas = inOpt.get();
+	
+						if (pas != null) {
+							pas.state = PassengerState.Requested;
+							db.setClient(pas);
+							sendMessage(C.CLIENTS_NODE + C.TOPICLIMITER + msg[C.I_ID],
+									C.CMD_GOTREQUEST, null);
+						}
+						break;
+					default:
+						break;
+					}
 				}
 			}
 		}

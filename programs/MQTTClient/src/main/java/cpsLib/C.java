@@ -15,6 +15,8 @@ public class C {
 	public final static String VEHICLES_NODE = "Vehicles";
 	public final static String EXCHANGE_NODE = "Exchange";
 	public final static String SYNCH_NODE = "Synchronization";
+	public final static String PASSENGERSTATS_NODE = "PassengerStats";
+	public final static String CARSTATS_NODE = "CarStats";
 	public final static String OPTI_NODE = "Optimization";
 	
 	// Topics for passing Client handling
@@ -31,6 +33,8 @@ public class C {
 	public final static String CMD_BEENHANDLED = "beenHandled";
 	public final static String CMD_OFFERHANDLING = "offerHandling";
 	public final static String CMD_WANTCONNECT = "wantConnect";
+	public final static String CMD_PASSREQUEST = "passRequest";
+	public final static String CMD_GOTREQUEST = "gotRequest";
 	public final static String CMD_OFFERCONNECT = "offerConnect";
 	public final static String CMD_STATIONEXCHANGE = "stationExchange";
 	public final static String CMD_DECLINEDROPOFF = "declineDropoff";
@@ -46,6 +50,8 @@ public class C {
 	public final static String CMD_CARDATA = "carData";
 	public final static String CMD_CARRECEIVED = "carReceived";
 	public final static String CMD_DEBUG = "carReceived";
+	public final static String CMD_OFFERPASSENGERSTATS = "offerPassengerStats";
+	public final static String CMD_OFFERCARSTATS = "offerPassengerStats";
 	
 	// ***SEMANTICS-Section***
 	public final static short I_CMD = 0;

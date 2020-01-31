@@ -3,46 +3,39 @@ package com;
 public class Main {
 
 	public static void main(String[] args) throws InterruptedException {
-		/*
-//		ch.Application clientHandler = new ch.Application();
-//		Thread ch = new Thread(clientHandler);
-//		ch.start();
-		int clientHandlers = 10;
+		int clientHandlers = 5;
 		for (int i=0; i<clientHandlers; ++i) {
 			new Thread(new ch.Application()).start();
 		}
 		
-//		ds.Application discoveryService = new ds.Application();
-//		Thread ds = new Thread(discoveryService);
-//		ds.start();
-		int discoveryServices = 2;
+		int discoveryServices = 1;
 		for (int i=0; i<discoveryServices; ++i) {
 			new Thread(new ds.Application()).start();
 		}
 		
-//		ca.Application clientApp = new ca.Application();
-//		Thread ca = new Thread(clientApp);
-//		ca.start();
-		int clients = 1000;
+		int Registrys = 1;
+		for (int i=0; i<Registrys; ++i) {
+			new Thread(new reg.Application()).start();
+		}
+		
+		int clients = 50;
 		for (int i=0; i<clients; ++i) {
-			new Thread(new ca.Application()).start();
+			new Thread(new ca.Application("Client-" + i)).start();
+		}
+		
+		int carHandlers = 5;
+		for (int i=0; i<carHandlers; ++i) {
+			new Thread(new ach.Application()).start();
+		}
+
+		int cars = 20;
+		for (int i=0; i<cars; ++i) {
+			new Thread(new ac.Application()).start();
 		}
 
 		while (true) {
 			Thread.sleep(500);
-			System.out.println(System.currentTimeMillis());
-		}*/
-		
-		ac.Application car = new ac.Application(0, 0);
-		Thread ac = new Thread(car);
-		ac.start();
-		
-		ach.Application carHandler = new ach.Application();
-		Thread ach = new Thread(carHandler);
-		ach.start();
-		
-		while (true) {
-			
+			//System.out.println(System.currentTimeMillis());
 		}
 	}
 }
