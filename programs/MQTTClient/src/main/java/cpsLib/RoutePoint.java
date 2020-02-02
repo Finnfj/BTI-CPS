@@ -52,7 +52,7 @@ public class RoutePoint implements Serializable {
 		if (o instanceof RoutePoint) {
 			RoutePoint other = (RoutePoint) o;
 			// return (other.getlatVal() == latVal && other.getlongVal() == longVal && other.getName() == name);
-			return (other.getName() == name);
+			return (other.getName().equals(name));
 		} else {
 			return false;	
 		}	

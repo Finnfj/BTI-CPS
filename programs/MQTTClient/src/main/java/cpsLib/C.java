@@ -18,6 +18,7 @@ public class C {
 	public final static String PASSENGERSTATS_NODE = "PassengerStats";
 	public final static String CARSTATS_NODE = "CarStats";
 	public final static String OPTI_NODE = "Optimization";
+	public final static String REQUEST_NODE = "Request";
 	
 	// Topics for passing Client handling
 	public final static String HANDLING_EUROPE_TOPIC = "passHandling_EU";
@@ -52,11 +53,21 @@ public class C {
 	public final static String CMD_DEBUG = "carReceived";
 	public final static String CMD_OFFERPASSENGERSTATS = "offerPassengerStats";
 	public final static String CMD_OFFERCARSTATS = "offerPassengerStats";
+	public final static String CMD_OFFERSTATS = "offerStats";
+	public final static String CMD_CHANGEROUTEREQUEST = "changeRouteRequest";
+	public final static String CMD_CHANGEROUTEALLOW = "changeRouteAllow";
+	public final static String CMD_CHANGEROUTEDECLINE = "changeRouteDecline";
 	
 	// ***SEMANTICS-Section***
 	public final static short I_CMD = 0;
 	public final static short I_ID = 1;
 	public final static short I_MSG = 2;
+	
+	public final static int MULT = 10;
+	public final static int DESIRED_RATIO_MAX = 20*MULT;
+	public static int calcCost(int passengers, int cars) {
+		return cars <= 0 ? (passengers * MULT) : (passengers * MULT / cars);
+	}
 
 	public enum RESOURCE_FROM {
 		FILE,

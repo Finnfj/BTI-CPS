@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import cpsLib.C;
 import cpsLib.CPSApplication;
@@ -13,7 +14,7 @@ import cpsLib.MQTTWrapper;
 
 public class CarData implements Runnable {
 	private Map<String, CarStats> carStats;
-	private BlockingQueue<String> queue;
+	private BlockingQueue<String> queue = new LinkedBlockingQueue<>();
 	private MQTTWrapper mq;
 	private delg.Application a;
 

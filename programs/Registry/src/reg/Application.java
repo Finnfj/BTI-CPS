@@ -2,12 +2,14 @@ package reg;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import cpsLib.C;
 import cpsLib.CPSApplication;
 import cpsLib.DatabaseHandler;
 import cpsLib.Passenger;
+import cpsLib.Route;
 import cpsLib.RouteStats;
 
 public class Application extends CPSApplication implements Runnable {
@@ -28,13 +30,19 @@ public class Application extends CPSApplication implements Runnable {
 		List<Passenger> doneClients = new LinkedList<>();
 		DatabaseHandler db = new DatabaseHandler();
 		List<RouteStats> clientDistribution = new LinkedList<>();
+		Map<String, Route> routeMap = db.getRoutes();
+		for (Route r : routeMap.values()) {
+			clientDistribution.add(new RouteStats(r));
+		}
 
 		// Setup Connection
 		mq.connect(myName, "simplepw");
 		
 		while (true) {
 			long timestamp = System.currentTimeMillis();
-			clientDistribution.clear();
+			for (RouteStats rs : clientDistribution) {
+				rs.reset();
+			}
 			doneClients.clear();
 			clients = db.getClients();
 			
@@ -65,7 +73,7 @@ public class Application extends CPSApplication implements Runnable {
 			
 			// Send RouteStats one by one to Delegator
 			for (RouteStats rs : clientDistribution) {
-				System.out.print(rs.toString());
+				//System.out.print(rs.toString());
 				Optional<String> o = convertToString(rs);
 				sendMessage(C.PASSENGERSTATS_NODE, C.CMD_OFFERPASSENGERSTATS, o.get());
 			}

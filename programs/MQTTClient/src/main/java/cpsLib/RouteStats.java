@@ -24,4 +24,8 @@ public class RouteStats implements Serializable {
 		}
 		return tmp;
 	}
+	
+	public void reset() {
+		waitingAt = new int[waitingAt.length];
+	}
 }

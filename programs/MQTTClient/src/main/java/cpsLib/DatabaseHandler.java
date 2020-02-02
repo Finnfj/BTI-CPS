@@ -112,8 +112,8 @@ public class DatabaseHandler {
 				PassengerState state = PassengerState.values()[resultSet.getInt("state")];
 				Route r = getRoute(resultSet.getString("route"));
 				Passenger pas = new Passenger(name, 
-						r.getRoutePoint(start), 
 						r.getRoutePoint(target), 
+						r.getRoutePoint(start), 
 						r, state);
 				pas.currHandler = handler;
 				pas.currCar = car;
@@ -250,12 +250,16 @@ public class DatabaseHandler {
 	
 	public static void main(String[] args) {
 		DatabaseHandler db = new DatabaseHandler();
-		List<Passenger> pasList = db.getClients();
-		
-		for (Passenger p : pasList) {
-			System.out.println(p.pasName);
-		}
-		
+
+
+		Route addRoute = new Route("luebeck-altstadt", "Luebeck - Altstadt", 
+				new RoutePoint("Museum", 53.860095, 10.685331),
+				new RoutePoint("Holstenbruecke", 53.866245, 10.680825),
+				new RoutePoint("Clemensstrasse", 53.870407, 10.680460),
+				new RoutePoint("Burgtorbruecke", 53.874392, 10.691639),
+				new RoutePoint("Rehderbruecke", 53.863929, 10.693055));
+		db.remRoute("luebeck-altstadt");
+		db.addRoute(addRoute.getID(), addRoute);
 //		Resources r = new Resources(C.RESOURCE_FROM.FILE);
 //		Route route = r.getRouteMap().get("hamburg-grosserunde");
 //		db.remRoute("hamburg-grosserunde");

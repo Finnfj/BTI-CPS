@@ -3,6 +3,7 @@ package delg;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import cpsLib.C;
 import cpsLib.MQTTWrapper;
@@ -12,7 +13,7 @@ import cpsLib.CarStats;
 
 public class ClientData implements Runnable {
 	private Map<String, RouteStats> routeStats;
-	private BlockingQueue<String> queue;
+	private BlockingQueue<String> queue = new LinkedBlockingQueue<>();
 	private MQTTWrapper mq;
 	private delg.Application a;
 

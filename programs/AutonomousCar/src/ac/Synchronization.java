@@ -62,6 +62,7 @@ public class Synchronization implements Runnable {
 		List<Passenger> done = a.getDoneList();
 		Boolean needSynch = false;
 
+		/*
 		synchronized (passengers) {
 			try {
 				// Read done Passengers
@@ -80,13 +81,14 @@ public class Synchronization implements Runnable {
 		        fileIn.close();
 			} catch (Exception e) {  }
 		}
-		
+		*/
 		System.out.println("Synchronization started");
 		while (true) {
 			if (conn == connectionState.Disconnected) {
 				a.sendMessage(C.CARHANDLING_TOPIC, C.CMD_CARINITIAL, null);
 			} else if (conn == connectionState.Connected) {
 				if (a.getPassChange() || needSynch) {
+//					long startTime = System.currentTimeMillis();
 					synchronized (passengers) {
 						// Save file
 						try {
@@ -133,6 +135,7 @@ public class Synchronization implements Runnable {
 						}
 						passengers.notifyAll();
 					}
+//					System.out.println("["+a.getName()+"] SYNCH LOOP TOOK "+ (System.currentTimeMillis()-startTime) + "ms");
 				}
 			}
 			

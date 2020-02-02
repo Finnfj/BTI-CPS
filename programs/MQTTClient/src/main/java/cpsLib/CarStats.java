@@ -13,10 +13,11 @@ public class CarStats implements Serializable {
 	public int nextRoutePoint;
 	public long lastChange;
 	
-	public CarStats(String name, String routeID, int passengers, String nextRoutePoint) {
+	public CarStats(String name, String routeID, int passengers, int nextRoutePoint) {
 		super();
+		this.name = name;
 		this.routeID = routeID;
-		Passengers = passengers;
+		this.Passengers = passengers;
 		this.nextRoutePoint = nextRoutePoint;
 	}
 }
