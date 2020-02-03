@@ -108,15 +108,20 @@ public class Application extends CPSApplication implements Runnable {
 		mq.connect(myName, "simplepw");
 		BlockingQueue<String> personalQueue = new LinkedBlockingQueue<>();
 		mq.subscribe(C.CLIENTS_NODE + C.TOPICLIMITER + myName, personalQueue);
-		mq.subscribe(C.EXCHANGE_NODE + C.TOPICLIMITER + thisPassenger.start.getName(), personalQueue);
 		
 		// ask for connection
 		sendMessage(C.DISCOVERY_TOPIC, C.CMD_WANTCONNECT, null);
+//		System.out.println("["+myName+"] Sending connection request");
 		long timestamp = 0;
 		
 		String[] msg;
 		while (true) {
 			msg = getNext(personalQueue, 1000);
+			
+			if (thisPassenger.state == PassengerState.Disconnected && ((msg != null && !msg[C.I_CMD].equals(C.CMD_OFFERCONNECT)) || msg == null)) {
+				//System.out.println("["+myName+"] Not yet connected, try again...");
+				sendMessage(C.DISCOVERY_TOPIC, C.CMD_WANTCONNECT, null);
+			}
 			
 			if (msg != null) {
 				switch (msg[C.I_CMD]) {
@@ -124,6 +129,8 @@ public class Application extends CPSApplication implements Runnable {
 					if (thisPassenger.state == PassengerState.Disconnected) {
 						thisPassenger.currHandler = msg[C.I_ID];
 						thisPassenger.state = PassengerState.Connected;
+						mq.subscribe(C.EXCHANGE_NODE + C.TOPICLIMITER + thisPassenger.start.getName(), personalQueue);
+						//System.out.println("["+myName+"] Got connect offer...");
 						
 						Optional<String> outOpt = convertToString(thisPassenger);
 	
@@ -137,7 +144,7 @@ public class Application extends CPSApplication implements Runnable {
 					}
 					break;
 				case C.CMD_OFFEREXCHANGE:
-					System.out.println("["+myName+"] got exchange offer from " + msg[C.I_ID] + " and my state is " + thisPassenger.state.toString());
+					//System.out.println("["+myName+"] got exchange offer from " + msg[C.I_ID] + " and my state is " + thisPassenger.state.toString());
 					if (thisPassenger.state == PassengerState.Requested) {
 						if (msg[C.I_MSG].equals(thisPassenger.currRoute.getName())) {
 							thisPassenger.state = PassengerState.Waiting;
@@ -154,7 +161,7 @@ public class Application extends CPSApplication implements Runnable {
 						thisPassenger.currCar = msg[C.I_ID];
 						thisPassenger.state = PassengerState.Seated;
 						mq.unsubscribe(C.EXCHANGE_NODE + C.TOPICLIMITER + thisPassenger.start.getName());
-						System.out.println("["+myName+"] got picked up from " + msg[C.I_ID] + " at " + thisPassenger.start.getName());
+//						System.out.println("["+myName+"] got picked up from " + msg[C.I_ID] + " at " + thisPassenger.start.getName());
 					}
 					break;
 				case C.CMD_EXCHANGEFAIL:
@@ -181,7 +188,7 @@ public class Application extends CPSApplication implements Runnable {
 			}
 			
 			if (thisPassenger.state == PassengerState.Arrived) {
-				System.out.println(myName + ": Arrived at Station " + thisPassenger.target.getName());
+//				System.out.println(myName + ": Arrived at Station " + thisPassenger.target.getName());
 				break;
 			}
 			

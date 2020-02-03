@@ -124,17 +124,49 @@ public class DatabaseHandler {
 		}
 		return pasList;
 	}
+
+	public List<Passenger> getClientsWithTimestamps() {
+		checkConnection();
+		List<Passenger> pasList = new LinkedList<>();
+		
+		try {
+			resultSet = stmt.executeQuery(ALLCLIENTS_QUERY);
+			while (resultSet.next()) {
+				String name = resultSet.getString("id");
+				String handler = resultSet.getString("handler");
+				String car = resultSet.getString("car");
+				String start = resultSet.getString("start");
+				String target = resultSet.getString("target");
+				PassengerState state = PassengerState.values()[resultSet.getInt("state")];
+				Route r = getRoute(resultSet.getString("route"));
+				Passenger pas = new Passenger(name, 
+						r.getRoutePoint(target), 
+						r.getRoutePoint(start), 
+						r, state);
+				pas.currHandler = handler;
+				pas.currCar = car;
+				pas.tstamps[0] = resultSet.getLong("registered");
+				pas.tstamps[1] = resultSet.getLong("pickedup");
+				pas.tstamps[2] = resultSet.getLong("arrived");
+				pasList.add(pas);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return pasList;
+	}
 	
 	public Boolean setClient(Passenger pas) {
 		checkConnection();
 		Boolean ret = false;
+		int pasState = pas.state.ordinal();
 		
 		try {
 			resultSet = stmt.executeQuery(PASSENGER_QUERY + "\""+pas.pasName+"\"");
 			if (resultSet.next()) {
 				// update
 				stmt.execute(UPDATECLIENT_QUERY 
-						+ "state = " + pas.state.ordinal()
+						+ "state = " + pasState
 						+ ", handler = '" + pas.currHandler
 						+ "', car = '" + pas.currCar
 						+ "', start = '" + pas.start.getName()
@@ -143,14 +175,41 @@ public class DatabaseHandler {
 						+ "' WHERE id = '" + pas.pasName + "'");
 			} else {
 				// create new
-				stmt.execute(INSERT_QUERY + "clients VALUES ('"
+				stmt.execute(INSERT_QUERY + "clients (id, state, handler, car, start, target, route) VALUES ('"
 						+ pas.pasName + "', "
-						+ pas.state.ordinal() + ", '"
+						+ pasState + ", '"
 						+ pas.currHandler + "', '"
 						+ pas.currCar + "', '"
 						+ pas.start.getName() + "', '"
 						+ pas.target.getName() + "', '"
 						+ pas.currRoute.getID() + "')");
+			}
+			
+			resultSet = stmt.executeQuery(PASSENGER_QUERY + "\""+pas.pasName+"\"");
+			if (resultSet.next()) {
+				long registered = resultSet.getLong("registered");
+				long pickedup = resultSet.getLong("pickedup");
+				long arrived = resultSet.getLong("arrived");
+				
+				switch (pasState) {
+				case 2:
+					if (registered == 0) {
+						stmt.execute("UPDATE clients SET registered = " + System.currentTimeMillis() + " WHERE id = '" + pas.pasName + "'");
+					}
+					break;
+				case 4:
+					if (pickedup == 0) {
+						stmt.execute("UPDATE clients SET pickedup = " + System.currentTimeMillis() + " WHERE id = '" + pas.pasName + "'");
+					}
+					break;
+				case 5:
+					if (arrived == 0) {
+						stmt.execute("UPDATE clients SET arrived = " + System.currentTimeMillis() + " WHERE id = '" + pas.pasName + "'");
+					}
+					break;
+				default:
+					break;
+				}
 			}
 			ret = true;
 		} catch (Exception e) {

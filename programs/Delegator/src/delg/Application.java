@@ -1,5 +1,7 @@
 package delg;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -8,6 +10,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import com.opencsv.CSVWriter;
 
 import cpsLib.C;
 import cpsLib.CPSApplication;
@@ -38,7 +42,7 @@ public class Application extends CPSApplication implements Runnable {
 		t.run();
 	}
 
-	private void runSequence() throws InterruptedException {
+	private void runSequence() throws InterruptedException, IOException {
 		if (!initialized) {
 			db = new DatabaseHandler();
 			routeMap = db.getRoutes();
@@ -106,15 +110,19 @@ public class Application extends CPSApplication implements Runnable {
 							optiInfo.notifyAll();
 						}
 						
+						String csv = r.getName() + ".csv";
+						CSVWriter writer = new CSVWriter(new FileWriter(csv, true));
+						String [] data = { String.valueOf(System.currentTimeMillis()), String.valueOf(waiting), String.valueOf(thisRouteCars), String.valueOf(cost) };
+						writer.writeNext(data);
+						writer.close();
 						System.out.println("---------------------------\n" +
-								r.getName() + ": WAITING=" + waiting + ", DRIVING=" + thisRouteCars + ", COST=" + cost
-								);
-						for (RoutePoint rp : r.getRoute()) {
-							int i = r.getRoute().indexOf(rp);
-							List<String> rpDrivingTo = drivingTo.get(i);
-							System.out.println(rp.getName() + ": WAITING=" + thisRouteStats.waitingAt[i]
-									+ ", DRIVING_TO=" + (rpDrivingTo != null ? rpDrivingTo.size() : "0"));
-						}
+								r.getName() + ": WAITING=" + waiting + ", DRIVING=" + thisRouteCars + ", COST=" + cost);
+//						for (RoutePoint rp : r.getRoute()) {
+//							int i = r.getRoute().indexOf(rp);
+//							List<String> rpDrivingTo = drivingTo.get(i);
+//							//System.out.println(rp.getName() + ": WAITING=" + thisRouteStats.waitingAt[i] + ", DRIVING_TO=" + (rpDrivingTo != null ? rpDrivingTo.size() : "0"));
+//							System.out.println(rp.getName() + ": WAITING=" + thisRouteStats.waitingAt[i] + ", DRIVING_TO=" + (rpDrivingTo != null ? rpDrivingTo.toString() : "0"));
+//						}
 						System.out.println("---------------------------");
 					}
 					routeStats.notifyAll();
@@ -167,7 +175,7 @@ public class Application extends CPSApplication implements Runnable {
 	public void run() {
 		try {
 			runSequence();
-		} catch (InterruptedException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

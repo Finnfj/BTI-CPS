@@ -63,6 +63,7 @@ public class Application extends CPSApplication implements Runnable {
 					case C.CMD_PASSCLIENT:
 						sendMessage(C.CLIENTS_NODE + C.TOPICLIMITER + msg[C.I_MSG],
 								C.CMD_OFFERCONNECT, null);
+						//System.out.println("Sending connect offer to  " + msg[C.I_MSG]);
 						break;
 					case C.CMD_PASSREQUEST:
 						// deserialize passenger
@@ -76,6 +77,7 @@ public class Application extends CPSApplication implements Runnable {
 							db.setClient(pas);
 							sendMessage(C.CLIENTS_NODE + C.TOPICLIMITER + msg[C.I_ID],
 									C.CMD_GOTREQUEST, null);
+							//System.out.println("Got Client " + pas.pasName);
 						}
 						break;
 					default:

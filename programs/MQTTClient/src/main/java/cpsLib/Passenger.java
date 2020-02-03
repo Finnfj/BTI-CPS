@@ -20,6 +20,7 @@ public class Passenger implements Serializable {
 	public Route currRoute;
 	public RoutePoint target;
 	public RoutePoint start;
+	public long[] tstamps = new long[3]; 
 
 	public Passenger(String pasName) {
 		super();

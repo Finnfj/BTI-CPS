@@ -105,14 +105,22 @@ public class Application extends CPSApplication implements Runnable {
 		new Thread(new Optimization(this)).start();
 		// Optimization starten
 		long begin;
+		RoutePoint startTarget = null;
+		long startTime = 0;
 		
 		// Superloop
 		while (true) {
 			double distanceLeft = gps.getDistance();
 			
-			//long startTime = System.currentTimeMillis();
 			synchronized (passengerList) {
 				if (distanceLeft <= DROPOFF_RANGE) {
+					if (startTarget == null) {
+						startTime = System.currentTimeMillis();
+						startTarget = currentTarget;
+					} else if (startTarget == currentTarget) {
+						System.out.println("["+myName+"] Drove a round in " + (System.currentTimeMillis()-startTime)/1000 + " seconds");
+						startTarget = null;
+					}
 					RoutePoint currentStation = currentTarget;
 					String[] msg;
 
@@ -131,7 +139,7 @@ public class Application extends CPSApplication implements Runnable {
 							Thread.sleep(100);
 						}
 
-						long timeStart = System.currentTimeMillis();
+//						long timeStart = System.currentTimeMillis();
 						// Drop off all passengers
 						begin = System.currentTimeMillis();
 						do {
@@ -144,8 +152,8 @@ public class Application extends CPSApplication implements Runnable {
 											p.state = PassengerState.Arrived;
 											p.currCar = myName;
 											tmp.add(p);
-											System.out.println("[" + myName + "] " + p.pasName + " drop-off at "
-													+ currentStation.getName());
+//											System.out.println("[" + myName + "] " + p.pasName + " drop-off at "
+//													+ currentStation.getName());
 										}
 									}
 									if (tmp.size() > 0) {
@@ -158,7 +166,7 @@ public class Application extends CPSApplication implements Runnable {
 								}
 							}
 						} while (!exchangeQueue.isEmpty() || System.currentTimeMillis() - begin < WAITTIME);
-						if (System.currentTimeMillis()-timeStart > 6000) System.out.println("Hat ewig gedauert, "+ (System.currentTimeMillis()-timeStart)+"ms");
+//						if (System.currentTimeMillis()-timeStart > 6000) System.out.println("Hat ewig gedauert, "+ (System.currentTimeMillis()-timeStart)+"ms");
 						// Check for passengers that must get off here and
 						// forcefully drop them out
 						List<Passenger> tmp = new LinkedList<>();
@@ -181,7 +189,7 @@ public class Application extends CPSApplication implements Runnable {
 
 					// Get new Passengers on board
 					exchangeQueue.clear();
-					System.out.println("["+myName+"] offering exchange at "+ currentStation.getName());
+//					System.out.println("["+myName+"] offering exchange at "+ currentStation.getName());
 					sendMessage(C.EXCHANGE_NODE + C.TOPICLIMITER + currentStation.getName(), C.CMD_OFFEREXCHANGE,
 							currentRoute.getName());
 
@@ -225,7 +233,7 @@ public class Application extends CPSApplication implements Runnable {
 					gps.setTarPos(new Position(currentTarget.getlatVal(), currentTarget.getlongVal()));
 
 					// if (passengerList.size() > 0 || doneList.size() > 0) {
-					 System.out.println("["+myName+"] Exchange at Station "+currentStation.getName()+" succesful. Next Target " + currentTarget.getName() + " ("+gps.getDistance()+"m)");
+//					 System.out.println("["+myName+"] Exchange at Station "+currentStation.getName()+" succesful. Next Target " + currentTarget.getName() + " ("+gps.getDistance()+"m)");
 					// for (Passenger p : passengerList) {
 					// System.out.println("["+myName+"] Passenger: " +
 					// p.pasName);

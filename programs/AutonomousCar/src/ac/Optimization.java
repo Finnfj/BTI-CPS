@@ -115,7 +115,7 @@ public class Optimization implements Runnable {
 									}
 									
 									// calculate minusCost
-									if (o.closestRP != null)	continue;
+									if (o.closestRP == null)	continue;
 								
 									nearestDistance = Math.max(0, nearestDistance-SWITCHROUTE_FREE_DIST);
 									int minusCost = (int) ((nearestDistance/1000) * PENALTY_PER_KM);
@@ -152,7 +152,7 @@ public class Optimization implements Runnable {
 										}
 										
 										if (msg != null) {
-											if (msg[C.I_CMD] == C.CMD_CHANGEROUTEALLOW) {
+											if (msg[C.I_CMD].equals(C.CMD_CHANGEROUTEALLOW)) {
 												// CHANGE ROUTE
 												// set new route
 												a.setCurrentRoute(routeMap.get(closestPossibility.routeID));

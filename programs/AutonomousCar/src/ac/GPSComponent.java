@@ -91,7 +91,7 @@ public class GPSComponent implements Runnable {
 							speed *= 25;
 						}
 					} else {
-						speed *= 100;
+						speed *= 25;
 					}
 					double distPercentage = remainingDistance == 0.0 ? 0 : speed / remainingDistance;
 					myPos.latval += (tarPos.latval - myPos.latval) * distPercentage * seconds;
