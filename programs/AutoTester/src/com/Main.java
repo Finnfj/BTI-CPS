@@ -35,15 +35,15 @@ public class Main {
 		
 		// Clients when using CONTINUOUS, spawn per minute
 		List<Pair<String, Integer>> listPassCon = new LinkedList<>();
-		listPassCon.add(new Pair<String, Integer>("luebeck-altstadt", 10));
-		listPassCon.add(new Pair<String, Integer>("hamburg-grosserunde", 0));
+		listPassCon.add(new Pair<String, Integer>("luebeck-altstadt", 5));
+		listPassCon.add(new Pair<String, Integer>("hamburg-grosserunde", 1));
 
 		// Cars when using GENERIC
 		int cars = 20;
 		// Cars when using SPECIFIC OR CONTINUOUS
 		List<Pair<String, Integer>> listCars = new LinkedList<>();
-		listCars.add(new Pair<String, Integer>("luebeck-altstadt", 20));
-		listCars.add(new Pair<String, Integer>("hamburg-grosserunde", 0));
+		listCars.add(new Pair<String, Integer>("luebeck-altstadt", 5));
+		listCars.add(new Pair<String, Integer>("hamburg-grosserunde", 20));
 		
 		long startTime = System.currentTimeMillis();
 		switch (tt) {

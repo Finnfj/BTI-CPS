@@ -64,7 +64,7 @@ public class C {
 	public final static short I_MSG = 2;
 	
 	public final static int MULT = 10;
-	public final static int DESIRED_RATIO_MAX = 10*MULT;
+	public final static int DESIRED_RATIO_MAX = 6*MULT;
 	public static int calcCost(int passengers, int cars) {
 		return cars <= 0 ? (passengers * MULT) : (passengers * MULT / cars);
 	}

@@ -114,13 +114,13 @@ public class Application extends CPSApplication implements Runnable {
 			
 			synchronized (passengerList) {
 				if (distanceLeft <= DROPOFF_RANGE) {
-					if (startTarget == null) {
-						startTime = System.currentTimeMillis();
-						startTarget = currentTarget;
-					} else if (startTarget == currentTarget) {
-						System.out.println("["+myName+"] Drove a round in " + (System.currentTimeMillis()-startTime)/1000 + " seconds");
-						startTarget = null;
-					}
+//					if (startTarget == null) {
+//						startTime = System.currentTimeMillis();
+//						startTarget = currentTarget;
+//					} else if (startTarget == currentTarget) {
+//						System.out.println("["+myName+"] Drove a round in " + (System.currentTimeMillis()-startTime)/1000 + " seconds");
+//						startTarget = null;
+//					}
 					RoutePoint currentStation = currentTarget;
 					String[] msg;
 

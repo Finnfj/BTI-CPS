@@ -171,6 +171,7 @@ public class Optimization implements Runnable {
 														e.printStackTrace();
 													}
 												}
+												System.out.println("["+a.getName() + "] Succesfully changed Route");
 												break;
 											} else {
 												possibilities.remove(closestPossibility);
